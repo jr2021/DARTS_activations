@@ -24,6 +24,7 @@ class DARTSOptimizer(MetaOptimizer):
         """
         Function to add the architectural weights to the edges.
         """
+
         len_primitives = len(edge.data.op)
         alpha = torch.nn.Parameter(1e-3 * torch.randn(size=[len_primitives], requires_grad=True))
         edge.data.set('alpha', alpha, shared=True)
