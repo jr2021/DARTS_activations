@@ -1,0 +1,283 @@
+import logging
+from naslib.defaults.trainer import Trainer
+from naslib.optimizers import DARTSOptimizer
+from naslib.search_spaces import DartsSearchSpace
+from naslib.utils import utils, setup_logger, get_config_from_args, set_seed, log_args
+from naslib.search_spaces.core.graph import Graph, EdgeData
+from naslib.search_spaces.core import primitives as ops
+from torch import nn
+from fvcore.common.config import CfgNode
+from copy import deepcopy
+from IPython.display import clear_output
+import torch
+
+
+class Minimum(ops.AbstractPrimitive):
+
+    def __init__(self, **kwargs):
+        super().__init__(locals())
+
+    def forward(self, x, edge_data=None):
+        return torch.minimum(x[0], x[1])
+
+    def get_embedded_ops(self):
+        return None
+
+
+class Maximum(ops.AbstractPrimitive):
+
+    def __init__(self, **kwargs):
+        super().__init__(locals())
+
+    def forward(self, x, edge_data=None):
+        return torch.maximum(x[0], x[1])
+
+    def get_embedded_ops(self):
+        return None
+
+
+class SimpleResNet20SearchSpace(Graph):
+    """
+    https://www.researchgate.net/figure/ResNet-20-architecture_fig3_351046093
+    """
+
+    OPTIMIZER_SCOPE = [
+        f"activation_{i}" for i in range(1, 20)
+    ]
+
+    QUERYABLE = False
+
+    def __init__(self):
+        super().__init__()
+
+        # cell definition
+        activation_cell = Graph()
+        activation_cell.name = 'activation_cell'
+        activation_cell.add_node(1)  # input node
+        activation_cell.add_node(2)  # intermediate node
+        activation_cell.add_node(3)  # output node
+        activation_cell.add_edges_from([(1, 2, EdgeData())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(2, 3, EdgeData().finalize())])  # immutable output edge
+
+        # macroarchitecture definition
+        self.name = 'makrograph'
+        self.add_node(1)  # input
+        self.add_node(2)  # intermediate
+        self.add_node(3,
+                      subgraph=activation_cell.copy().set_scope("activation_1").set_input([2]))  # activation cell 3
+        self.nodes[3]['subgraph'].name = "activation_1"
+
+        self.add_node(4)
+        self.add_node(5,
+                      subgraph=activation_cell.copy().set_scope("activation_2").set_input([4]))  # activation cell 3
+        self.nodes[5]['subgraph'].name = "activation_2"
+
+        self.add_node(6)
+        self.add_node(7,
+                      subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
+        self.nodes[7]['subgraph'].name = "activation_3"
+
+        self.add_edges_from([
+            (1, 2, EdgeData()),
+            (2, 3, EdgeData()),
+            (3, 4, EdgeData()),
+            (4, 5, EdgeData()),
+            (5, 6, EdgeData()),
+            (3, 6, EdgeData()),
+            (6, 7, EdgeData())
+        ])
+
+        self.edges[1, 2].set('op',
+                             ops.Sequential(nn.Conv2d(3, 16, 3, padding=1), ))  # convolutional edge
+        self.edges[3, 4].set('op',
+                             ops.Sequential(nn.Conv2d(16, 16, 3, padding=1), ))  # convolutional edge
+        self.edges[5, 6].set('op',
+                             ops.Sequential(nn.Conv2d(16, 16, 3, padding=1), ))  # convolutional edge
+
+        for scope in range(1, 4):
+            self.update_edges(
+                update_func=lambda edge: self._set_ops(edge),
+                scope=f"activation_{scope}",
+                private_edge_data=True,
+            )
+
+        conv_option = {
+            "in_channels": 16,
+            "out_channels": 16,
+            "kernel_size": 3,
+            "padding": 1
+        }
+        self._create_base_block(7, 4, activation_cell, conv_option)
+        self._create_base_block(11, 6, activation_cell, conv_option)
+
+        conv_option_a = {
+            "in_channels": 16,
+            "out_channels": 32,
+            "kernel_size": 3,
+            "padding": 1,
+            "stride": 2
+        }
+        conv_option_b = {
+            "in_channels": 16,
+            "out_channels": 32,
+            "kernel_size": 1,
+            "padding": 0,
+            "stride": 2
+        }
+        self._create_reduction_block(15, 8, activation_cell, conv_option_a, conv_option_b)
+
+        conv_option = {
+            "in_channels": 32,
+            "out_channels": 32,
+            "kernel_size": 3,
+            "padding": 1
+        }
+        self._create_base_block(19, 10, activation_cell, conv_option)
+        self._create_base_block(23, 12, activation_cell, conv_option)
+
+        conv_option_a = {
+            "in_channels": 32,
+            "out_channels": 64,
+            "kernel_size": 3,
+            "padding": 1,
+            "stride": 2
+        }
+        conv_option_b = {
+            "in_channels": 32,
+            "out_channels": 64,
+            "kernel_size": 1,
+            "padding": 0,
+            "stride": 2
+        }
+        self._create_reduction_block(27, 14, activation_cell, conv_option_a, conv_option_b)
+
+        conv_option = {
+            "in_channels": 64,
+            "out_channels": 64,
+            "kernel_size": 3,
+            "padding": 1
+        }
+        self._create_base_block(31, 16, activation_cell, conv_option)
+        self._create_base_block(34, 18, activation_cell, conv_option)
+
+        # add head
+        self.add_node(39)
+        self.add_edges_from([
+            (38, 39, EdgeData())
+        ])
+        self.edges[38, 39].set('op',
+                               ops.Sequential(
+                                   nn.AvgPool2d(8),
+                                   nn.Flatten(),
+                                   nn.Linear(64, 10),
+                                   nn.Softmax()
+                               ))  # convolutional edge
+        self.add_node(40)
+        self.add_edges_from([
+            (39, 40, EdgeData().finalize())
+        ])
+
+    def _create_base_block(self, start: int, stage: int, cell, conv_option: dict):
+        self.add_node(start + 1)
+
+        self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
+            [start + 1]))  # activation cell 3
+        self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+
+        self.add_node(start + 3)
+
+        self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
+            [start + 3]))  # activation cell 3
+        self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+
+        self.add_edges_from([
+            (start, start + 1, EdgeData()),
+            (start, start + 3, EdgeData()),
+            (start + 1, start + 2, EdgeData()),
+            (start + 2, start + 3, EdgeData()),
+            (start + 3, start + 4, EdgeData()),
+        ])
+
+        self.edges[start, start + 1].set('op',
+                                         ops.Sequential(nn.Conv2d(**conv_option), ))  # convolutional edge
+        self.edges[start + 2, start + 3].set('op',
+                                             ops.Sequential(nn.Conv2d(**conv_option), ))  # convolutional edge
+
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge),
+            scope=f"activation_{stage}",
+            private_edge_data=True, )
+
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge),
+            scope=f"activation_{stage + 1}",
+            private_edge_data=True, )
+
+    def _create_reduction_block(self, start: int, stage: int, cell, conv_option_a: dict, conv_option_b: dict):
+        self.add_node(start + 1)
+
+        self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
+            [start + 1]))  # activation cell 3
+        self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+
+        self.add_node(start + 3)
+
+        self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
+            [start + 3]))  # activation cell 3
+        self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+
+        self.add_edges_from([
+            (start, start + 1, EdgeData()),
+            (start, start + 3, EdgeData()),  # add conv
+            (start + 1, start + 2, EdgeData()),
+            (start + 2, start + 3, EdgeData()),
+            (start + 3, start + 4, EdgeData()),
+        ])
+
+        self.edges[start, start + 1].set('op',
+                                         ops.Sequential(nn.Conv2d(**conv_option_a), ))  # convolutional edge
+        conv_option_a["in_channels"] = conv_option_a["out_channels"]
+        conv_option_a["stride"] = 1
+
+        self.edges[start, start + 3].set('op',
+                                         ops.Sequential(nn.Conv2d(**conv_option_b), ))  # convolutional edge
+        self.edges[start + 2, start + 3].set('op',
+                                             ops.Sequential(nn.Conv2d(**conv_option_a), ))  # convolutional edge
+
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge),
+            scope=f"activation_{stage}",
+            private_edge_data=True, )
+
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge),
+            scope=f"activation_{stage + 1}",
+            private_edge_data=True, )
+
+    def _set_ops(self, edge):
+        edge.data.set('op', [
+            ops.Sequential(nn.ReLU()),
+            ops.Sequential(nn.Hardswish()),
+            ops.Sequential(nn.LeakyReLU()),
+            ops.Sequential(nn.Identity())
+        ])
+
+
+config = utils.get_config_from_args(config_type='nas')
+config.optimizer = 'darts'
+utils.set_seed(config.seed)
+clear_output(wait=True)
+utils.log_args(config)
+
+logger = setup_logger(config.save + '/log.log')
+logger.setLevel(logging.INFO)
+
+search_space = SimpleResNet20SearchSpace()
+
+optimizer = DARTSOptimizer(config)
+optimizer.adapt_search_space(search_space)
+
+trainer = Trainer(optimizer, config)
+trainer.search()
+
+trainer.evaluate_oneshot()
