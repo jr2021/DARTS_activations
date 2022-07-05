@@ -10,6 +10,7 @@ from fvcore.common.config import CfgNode
 from copy import deepcopy
 from IPython.display import clear_output
 import torch
+from naslib.search_spaces.core.primitives import AbstractPrimitive
 
 
 class Minimum(ops.AbstractPrimitive):
@@ -263,12 +264,37 @@ class SimpleResNet20SearchSpace(Graph):
         ])
 
 
-class stack():
+class Sub(AbstractPrimitive):
     def __init__(self):
-        pass
-    def __call__(self, tensors, edges_data=None):
-        return torch.stack(tensors)
+        super().__init__(locals())
 
+    def forward(self, x, edge_data=None):
+        return torch.sub(x[0], x[1])
+
+    def get_embedded_ops(self):
+        return None
+
+
+class Stack(AbstractPrimitive):
+    def __init__(self):
+        super().__init__(locals())
+
+    def forward(self, x, edge_data=None):
+        return [x[0], x[1]]
+
+    def get_embedded_ops(self):
+        return None
+
+class UnStack(AbstractPrimitive):
+    def __init__(self, dim=1):
+        super().__init__(locals())
+        self.dim = dim
+
+    def forward(self, x, edge_data=None):
+        return x[self.dim]
+
+    def get_embedded_ops(self):
+        return None
 
 class ActivationFuncResNet20SearchSpace(Graph):
     """
@@ -291,10 +317,23 @@ class ActivationFuncResNet20SearchSpace(Graph):
         activation_cell.add_node(2)  # unary node / intermediate node
         activation_cell.add_node(3)  # unary node / intermediate node
         activation_cell.add_node(4)  # binary node / output node
+        activation_cell.add_node(5)  # binary node / output node
         activation_cell.add_edges_from([(1, 2, EdgeData())])  # mutable intermediate edge
         activation_cell.add_edges_from([(1, 3, EdgeData())])  # mutable intermediate edge
         activation_cell.add_edges_from([(2, 4, EdgeData())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(3, 4, EdgeData())])  # immutable output edge
+        activation_cell.add_edges_from([(3, 4, EdgeData())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(2, 5, EdgeData())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(3, 5, EdgeData())])  # mutable intermediate edge
+
+        activation_cell.nodes[5]['comb_op'] = Sub()
+
+        activation_cell.add_node(6)  # stack
+        activation_cell.add_edges_from([(4, 6, EdgeData())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(5, 6, EdgeData())])  # mutable intermediate edge
+        activation_cell.nodes[6]['comb_op'] = Stack()
+
+        activation_cell.add_node(6)  # output
+        activation_cell.add_edges_from([(6, 7, EdgeData())])  # mutable intermediate edge
 
         for tup in [(1, 2), (1, 3)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
@@ -303,10 +342,15 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 ops.Sequential(nn.Identity())
             ])
 
-        for tup in [(2, 4), (3, 4)]:  # unary operations
+        for tup in [(2, 4), (3, 4), (2, 5), (3, 5), (4, 6), (5, 6)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
                 ops.Sequential(nn.Identity())  # hacky solution because DARTS always needs a list
             ])
+
+        activation_cell.edges[6, 7].set("op", [
+            ops.Sequential(UnStack(dim=0)),
+            ops.Sequential(UnStack(dim=1))
+        ])
 
         # macroarchitecture definition
         self.name = 'makrograph'
