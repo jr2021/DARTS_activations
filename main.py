@@ -296,11 +296,16 @@ class ActivationFuncResNet20SearchSpace(Graph):
         activation_cell.add_edges_from([(2, 4, EdgeData())])  # mutable intermediate edge
         activation_cell.add_edges_from([(3, 4, EdgeData())])  # immutable output edge
 
-        for tup in [(1, 2), (1, 3), (2, 4), (3, 4)]:  # unary operations
+        for tup in [(1, 2), (1, 3)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
                 ops.Sequential(Maximum()),
                 ops.Sequential(Minimum()),
                 ops.Sequential(nn.Identity())
+            ])
+
+        for tup in [(2, 4), (3, 4)]:  # unary operations
+            activation_cell.edges[tup[0], tup[1]].set("op", [
+                ops.Sequential(nn.Identity())  # hacky solution because DARTS always needs a list
             ])
 
         # macroarchitecture definition
