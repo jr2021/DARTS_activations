@@ -57,44 +57,34 @@ class ActivationFuncResNet20SearchSpace(Graph):
         activation_cell.add_node(2)  # unary node / intermediate node
         activation_cell.add_node(3)  # unary node / intermediate node
         activation_cell.add_node(4)  # binary node / output node
-        activation_cell.add_node(5)  # binary node / output node
         activation_cell.add_edges_from([(1, 2, EdgeData())])  # mutable intermediate edge
         activation_cell.add_edges_from([(1, 3, EdgeData())])  # mutable intermediate edge
+
         activation_cell.add_edges_from([(2, 4, EdgeData().finalize())])  # mutable intermediate edge
         activation_cell.add_edges_from([(3, 4, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.nodes[5]['comb_op'] = Add()
+        activation_cell.nodes[4]['comb_op'] = Stack()
 
-        activation_cell.add_edges_from([(2, 5, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(3, 5, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.nodes[5]['comb_op'] = Sub()
-
-        activation_cell.add_node(6)  # stack
-        activation_cell.add_edges_from([(4, 6, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(5, 6, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.nodes[6]['comb_op'] = Stack()
-
-        activation_cell.add_node(6)  # output
-        activation_cell.add_edges_from([(6, 7, EdgeData())])  # mutable intermediate edge
+        activation_cell.add_node(5)  # binary node / output node
+        activation_cell.add_edges_from([(4, 5, EdgeData())])  # mutable intermediate edge
 
         for tup in [(1, 2), (1, 3)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
-                ops.Sequential(Power(2)),
-                ops.Sequential(Sin()),
-                ops.Sequential(Cos()),
-                ops.Sequential(Abs_op()),
-                ops.Sequential(Sign()),
-                ops.Sequential(Beta_add()),
-                ops.Sequential(Log()),
-                ops.Sequential(Exp2()),
-                ops.Sequential(Maximum0()),
-                ops.Sequential(Minimum0()),
-                ops.Sequential(Sigmoid()),
+                # ops.Sequential(Power(2)),
+                # ops.Sequential(Sin()),
+                # ops.Sequential(Abs_op()),
+                # ops.Sequential(Beta_add()),
+                # ops.Sequential(Log()),
+                # ops.Sequential(Exp2()),
+                # ops.Sequential(Maximum0()),
+                # ops.Sequential(Minimum0()),
+                # ops.Sequential(Sigmoid()),
                 ops.Sequential(nn.Identity())
             ])
 
-        activation_cell.edges[6, 7].set("op", [
-            ops.Sequential(UnStack(dim=0)),
-            ops.Sequential(UnStack(dim=1))
+        activation_cell.edges[4, 5].set("op", [
+            ops.Sequential(Add()),
+            # ops.Sequential(Sub()),
+            # ops.Sequential(Maximum())
         ])
 
         # macroarchitecture definition
