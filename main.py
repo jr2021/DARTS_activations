@@ -320,16 +320,16 @@ class ActivationFuncResNet20SearchSpace(Graph):
         activation_cell.add_node(5)  # binary node / output node
         activation_cell.add_edges_from([(1, 2, EdgeData())])  # mutable intermediate edge
         activation_cell.add_edges_from([(1, 3, EdgeData())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(2, 4, EdgeData())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(3, 4, EdgeData())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(2, 5, EdgeData())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(3, 5, EdgeData())])  # mutable intermediate edge
-
+        activation_cell.add_edges_from([(2, 4, EdgeData().finalize())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(3, 4, EdgeData().finalize())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(2, 5, EdgeData().finalize())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(3, 5, EdgeData().finalize())])  # mutable intermediate edge
+        # (2, 4), (3, 4), (2, 5), (3, 5), (4, 6), (5, 6) finalize
         activation_cell.nodes[5]['comb_op'] = Sub()
 
         activation_cell.add_node(6)  # stack
-        activation_cell.add_edges_from([(4, 6, EdgeData())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(5, 6, EdgeData())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(4, 6, EdgeData().finalize())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(5, 6, EdgeData().finalize())])  # mutable intermediate edge
         activation_cell.nodes[6]['comb_op'] = Stack()
 
         activation_cell.add_node(6)  # output
@@ -342,10 +342,10 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 ops.Sequential(nn.Identity())
             ])
 
-        for tup in [(2, 4), (3, 4), (2, 5), (3, 5), (4, 6), (5, 6)]:  # unary operations
-            activation_cell.edges[tup[0], tup[1]].set("op", [
-                ops.Sequential(nn.Identity())  # hacky solution because DARTS always needs a list
-            ])
+        # for tup in [(2, 4), (3, 4), (2, 5), (3, 5), (4, 6), (5, 6)]:  # unary operations
+        #     activation_cell.edges[tup[0], tup[1]].set("op", [
+        #         ops.Sequential(nn.Identity())  # hacky solution because DARTS always needs a list
+        #     ])
 
         activation_cell.edges[6, 7].set("op", [
             ops.Sequential(UnStack(dim=0)),
