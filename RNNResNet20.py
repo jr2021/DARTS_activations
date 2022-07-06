@@ -68,19 +68,24 @@ class ActivationFuncResNet20SearchSpace(Graph):
         activation_cell.add_edges_from([(4, 5, EdgeData())])  # mutable intermediate edge
 
         activation_cell.add_node(6)
-        activation_cell.add_edges_from([(5, 6, EdgeData())])  # unary node / intermediate node
+        activation_cell.add_edges_from([(5, 6, EdgeData().finalize())])  # unary node / intermediate node
         activation_cell.add_node(7)
-        activation_cell.add_edges_from([(1, 7, EdgeData())])  # mutable intermediate edge
-
+        activation_cell.add_edges_from([(6, 7, EdgeData())])  # mutable intermediate edge
         activation_cell.add_node(8)
-        activation_cell.add_edges_from([(7, 8, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(6, 8, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.nodes[8]['comb_op'] = Stack()
+        activation_cell.add_edges_from([(1, 8, EdgeData())])  # mutable intermediate edge
 
         activation_cell.add_node(9)
-        activation_cell.add_edges_from([(8, 9, EdgeData())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(8, 9, EdgeData().finalize())])  # mutable intermediate edge
+        activation_cell.add_edges_from([(7, 9, EdgeData().finalize())])  # mutable intermediate edge
+        activation_cell.nodes[9]['comb_op'] = Stack()
 
-        for tup in [(1, 2), (1, 3), (1, 7), (5, 6)]:  # unary operations
+        activation_cell.add_node(10)
+        activation_cell.add_edges_from([(9, 10, EdgeData())])  # mutable intermediate edge
+
+        activation_cell.add_node(11)
+        activation_cell.add_edges_from([(10, 11, EdgeData().finalize())])  # mutable intermediate edge
+
+        for tup in [(1, 2), (1, 3), (1, 8), (6, 7)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
                 # ops.Sequential(Power(2)),
                 # ops.Sequential(Sin()),
@@ -88,15 +93,16 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 # ops.Sequential(Beta_add()),
                 # ops.Sequential(Log()),
                 # ops.Sequential(Exp2()),
-                ops.Sequential(Maximum0()),
+                # ops.Sequential(Maximum0()),
                 # ops.Sequential(Minimum0()),
                 # ops.Sequential(Sigmoid()),
+                ops.Sequential(nn.ReLU()),
                 ops.Sequential(nn.Identity())
             ])
 
-        for tup in [(4, 5), (8, 9)]:
+        for tup in [(4, 5), (9, 10)]:
             activation_cell.edges[tup[0], tup[1]].set("op", [
-                ops.Sequential(Add()),
+                # ops.Sequential(Add()),
                 # ops.Sequential(Sub()),
                 ops.Sequential(Maximum())
             ])
