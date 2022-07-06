@@ -88,23 +88,22 @@ class ActivationFuncResNet20SearchSpace(Graph):
         for tup in [(1, 2), (1, 3), (1, 8), (6, 7)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
                 # ops.Sequential(Power(2)),
-                # ops.Sequential(Sin()),
+                ops.Sequential(Sin()),
                 # ops.Sequential(Abs_op()),
                 # ops.Sequential(Beta_add()),
                 # ops.Sequential(Log()),
                 # ops.Sequential(Exp2()),
-                # ops.Sequential(Maximum0()),
+                ops.Sequential(Maximum0()),
                 # ops.Sequential(Minimum0()),
-                # ops.Sequential(Sigmoid()),
-                ops.Sequential(nn.ReLU()),
+                ops.Sequential(Sigmoid()),
                 ops.Sequential(nn.Identity())
             ])
 
         for tup in [(4, 5), (9, 10)]:
             activation_cell.edges[tup[0], tup[1]].set("op", [
-                # ops.Sequential(Add()),
+                ops.Sequential(Add()),
                 # ops.Sequential(Sub()),
-                ops.Sequential(Maximum())
+                # ops.Sequential(Maximum())
             ])
 
         # macroarchitecture definition
