@@ -1,4 +1,6 @@
 import logging
+import networkx as nx
+import matplotlib.pyplot as plt
 from naslib.defaults.trainer import Trainer
 from naslib.optimizers import DARTSOptimizer
 from naslib.utils import utils, setup_logger
@@ -293,6 +295,8 @@ logger = setup_logger(config.save + '/log.log')
 logger.setLevel(logging.INFO)
 
 search_space = ActivationFuncResNet20SearchSpace()
+# nx.draw_kamada_kawai(search_space)
+# plt.show()
 
 optimizer = DARTSOptimizer(config)
 optimizer.adapt_search_space(search_space)
