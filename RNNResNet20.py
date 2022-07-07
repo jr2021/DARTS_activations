@@ -89,44 +89,47 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         for tup in [(1, 2), (1, 3), (1, 8), (6, 7)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
-                ops.Identity(),
-                ops.Zero(stride=1),
-                ops.Sequential(Power(2)),
-                ops.Sequential(Power(3)),
-                ops.Sequential(Power(.5)),
+                ops.Sequential(nn.Identity()),
+                # ops.Zero(stride=1),
+                # ops.Sequential(Power(2)),
+                # ops.Sequential(Power(3)),
+                # ops.Sequential(Power(.5)),
                 ops.Sequential(Sin()),
                 ops.Sequential(Cos()),
-                ops.Sequential(Abs_op()),
+                # ops.Sequential(Abs_op()),
                 ops.Sequential(Sign()),
-                #                 ops.Sequential(Beta_mul(channels=32)),
-                #                 ops.Sequential(Beta_add(channels=32)),
-                ops.Sequential(Log()),
-                ops.Sequential(Exp()),
-                ops.Sequential(Sinh()),
-                ops.Sequential(Cosh()),
-                ops.Sequential(Tanh()),
-                ops.Sequential(Asinh()),
-                ops.Sequential(Acosh()),
-                ops.Sequential(Atan()),
-                ops.Sequential(Sinc()),
+                # Todo add channel options
+                # ops.Sequential(Beta_mul(channels=32)),
+                # ops.Sequential(Beta_add(channels=32)),
+                # ops.Sequential(Log()),
+                # ops.Sequential(Exp()),
+                # ops.Sequential(Sinh()),
+                # ops.Sequential(Cosh()),
+                # ops.Sequential(Tanh()),
+                # ops.Sequential(Asinh()),
+                # ops.Sequential(Acosh()),
+                # ops.Sequential(Atan()),
+                # ops.Sequential(Sinc()),
                 ops.Sequential(Maximum0()),
                 ops.Sequential(Minimum0()),
                 ops.Sequential(Sigmoid()),
-                ops.Sequential(LogExp()),
-                ops.Sequential(Exp2()),
-                ops.Sequential(Erf()),
-                #                 ops.Sequential(Beta(channels=16)),
+                # ops.Sequential(LogExp()),
+                # ops.Sequential(Exp2()),
+                # ops.Sequential(Erf()),
+                # Todo add channel options
+                # ops.Sequential(Beta(channels=16)),
             ])
 
         for tup in [(4, 5), (9, 10)]:
             activation_cell.edges[tup[0], tup[1]].set("op", [
                 ops.Sequential(Add()),
                 ops.Sequential(Sub()),
-                ops.Sequential(Mul()),
-                ops.Sequential(Div()),
-                ops.Sequential(Maximum()),
-                ops.Sequential(Minimum()),
-                ops.Sequential(SigMul()),
+                # ops.Sequential(Mul()),
+                # ops.Sequential(Div()),
+                # ops.Sequential(Maximum()),
+                # ops.Sequential(Minimum()),
+                # ops.Sequential(SigMul()),
+                # Todo add channel options
                 #                 ops.Sequential(ExpBetaSub2(channels=32)),
                 #                 ops.Sequential(ExpBetaSubAbs(channels=32)),
                 #                 ops.Sequential(BetaMix(channels=32)),
@@ -146,6 +149,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.nodes[5]['subgraph'].name = "activation_2"
 
         self.add_node(6)
+        # Todo add option here with a func which has a arg channels
         self.add_node(7,
                       subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
         self.nodes[7]['subgraph'].name = "activation_3"
@@ -312,6 +316,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 config = utils.get_config_from_args(config_type='nas')
 config.optimizer = 'darts'
 config.search.batch_size = 32
+config.search.learning_rate = 0.01
 utils.set_seed(config.seed)
 clear_output(wait=True)
 utils.log_args(config)
