@@ -10,9 +10,9 @@ from torch import nn
 from IPython.display import clear_output
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
-from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add
+from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul
 from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta_mul, Beta_add, Log, Exp, Sinh, Cosh, \
-    Tanh, Asinh, Acosh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf
+    Tanh, Asinh, Acosh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
 
 
 class Stack(AbstractPrimitive):
@@ -89,23 +89,47 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         for tup in [(1, 2), (1, 3), (1, 8), (6, 7)]:  # unary operations
             activation_cell.edges[tup[0], tup[1]].set("op", [
-                # ops.Sequential(Power(2)),
+                ops.Identity(),
+                ops.Zero(stride=1),
+                ops.Sequential(Power(2)),
+                ops.Sequential(Power(3)),
+                ops.Sequential(Power(.5)),
                 ops.Sequential(Sin()),
-                # ops.Sequential(Abs_op()),
-                # ops.Sequential(Beta_add()),
-                # ops.Sequential(Log()),
-                # ops.Sequential(Exp2()),
+                ops.Sequential(Cos()),
+                ops.Sequential(Abs_op()),
+                ops.Sequential(Sign()),
+                #                 ops.Sequential(Beta_mul(channels=32)),
+                #                 ops.Sequential(Beta_add(channels=32)),
+                ops.Sequential(Log()),
+                ops.Sequential(Exp()),
+                ops.Sequential(Sinh()),
+                ops.Sequential(Cosh()),
+                ops.Sequential(Tanh()),
+                ops.Sequential(Asinh()),
+                ops.Sequential(Acosh()),
+                ops.Sequential(Atan()),
+                ops.Sequential(Sinc()),
                 ops.Sequential(Maximum0()),
-                # ops.Sequential(Minimum0()),
+                ops.Sequential(Minimum0()),
                 ops.Sequential(Sigmoid()),
-                ops.Sequential(nn.Identity())
+                ops.Sequential(LogExp()),
+                ops.Sequential(Exp2()),
+                ops.Sequential(Erf()),
+                #                 ops.Sequential(Beta(channels=16)),
             ])
 
         for tup in [(4, 5), (9, 10)]:
             activation_cell.edges[tup[0], tup[1]].set("op", [
                 ops.Sequential(Add()),
-                # ops.Sequential(Sub()),
-                # ops.Sequential(Maximum())
+                ops.Sequential(Sub()),
+                ops.Sequential(Mul()),
+                ops.Sequential(Div()),
+                ops.Sequential(Maximum()),
+                ops.Sequential(Minimum()),
+                ops.Sequential(SigMul()),
+                #                 ops.Sequential(ExpBetaSub2(channels=32)),
+                #                 ops.Sequential(ExpBetaSubAbs(channels=32)),
+                #                 ops.Sequential(BetaMix(channels=32)),
             ])
 
         # macroarchitecture definition
@@ -287,6 +311,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 config = utils.get_config_from_args(config_type='nas')
 config.optimizer = 'darts'
+config.search.batch_size = 16
 utils.set_seed(config.seed)
 clear_output(wait=True)
 utils.log_args(config)
