@@ -3,6 +3,17 @@ from naslib.search_spaces.core.primitives import AbstractPrimitive
 
 
 # unary
+class Identity(AbstractPrimitive):
+    def __init__(self):
+        super().__init__(locals())
+
+    def forward(self, x, edge_data=None):
+        return x
+
+    def get_embedded_ops(self):
+        return None
+
+
 class Power(AbstractPrimitive):
     def __init__(self, power):
         super().__init__(locals())
