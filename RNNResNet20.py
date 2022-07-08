@@ -10,7 +10,7 @@ from torch import nn
 from IPython.display import clear_output
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
-from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul
+from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2
 from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta_mul, Beta_add, Log, Exp, Sinh, Cosh, \
     Tanh, Asinh, Acosh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
 
@@ -99,7 +99,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 # ops.Sequential(Abs_op()),
                 ops.Sequential(Sign()),
                 # Todo add channel options
-                # ops.Sequential(Beta_mul(channels=32)),
+                # ops.Sequential(Beta_mul()),
                 # ops.Sequential(Beta_add(channels=32)),
                 # ops.Sequential(Log()),
                 # ops.Sequential(Exp()),
@@ -130,7 +130,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 # ops.Sequential(Minimum()),
                 # ops.Sequential(SigMul()),
                 # Todo add channel options
-                #                 ops.Sequential(ExpBetaSub2(channels=32)),
+                # ops.Sequential(ExpBetaSub2(channels=32)),
                 #                 ops.Sequential(ExpBetaSubAbs(channels=32)),
                 #                 ops.Sequential(BetaMix(channels=32)),
             ])
@@ -316,7 +316,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 config = utils.get_config_from_args(config_type='nas')
 config.optimizer = 'darts'
 config.search.batch_size = 32
-config.search.learning_rate = 0.01
+config.search.learning_rate = 0.1
 utils.set_seed(config.seed)
 clear_output(wait=True)
 utils.log_args(config)
