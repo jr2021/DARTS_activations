@@ -12,7 +12,7 @@ import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, \
     BetaMix
-from activation_sub_func.unary_func import Identity, Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
+from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
     Tanh, Asinh, Acosh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
 
@@ -321,16 +321,16 @@ class ActivationFuncResNet20SearchSpace(Graph):
         # binary (4, 5), (9, 10)
         elif (edge.head, edge.tail) in {(4, 5), (9, 10)}:
             edge.data.set("op", [
-                ops.Sequential(Add()),
-                ops.Sequential(Sub()),
-                ops.Sequential(Mul()),
-                ops.Sequential(Div()),
-                ops.Sequential(Maximum()),
-                ops.Sequential(Minimum()),
-                ops.Sequential(SigMul()),
-                ops.Sequential(ExpBetaSub2(channels=channels)),
-                ops.Sequential(ExpBetaSubAbs(channels=channels)),
-                ops.Sequential(BetaMix(channels=channels)),
+                Add(),
+                Sub(),
+                Mul(),
+                Div(),
+                Maximum(),
+                Minimum(),
+                SigMul(),
+                ExpBetaSub2(channels=channels),
+                ExpBetaSubAbs(channels=channels),
+                BetaMix(channels=channels),
             ])
 
 
