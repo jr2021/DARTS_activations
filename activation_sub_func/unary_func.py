@@ -74,7 +74,7 @@ class Sign(AbstractPrimitive):
 class Beta_mul(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
-        self.beta = torch.nn.Parameter(torch.ones(channels))
+        self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
         return x * self.beta
@@ -270,7 +270,7 @@ class Erf(AbstractPrimitive):
 class Beta(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
-        self.beta = torch.nn.Parameter(torch.ones(channels))
+        self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
         return self.beta
