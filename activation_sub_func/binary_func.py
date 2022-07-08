@@ -83,6 +83,7 @@ class SigMul(AbstractPrimitive):
 class ExpBetaSub2(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
+        print(channels)
         self.beta = torch.ones(1, channels, 1, 1).cuda()
 
     def forward(self, x, edge_data=None):

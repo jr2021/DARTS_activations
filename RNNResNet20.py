@@ -87,54 +87,6 @@ class ActivationFuncResNet20SearchSpace(Graph):
         activation_cell.add_node(11)
         activation_cell.add_edges_from([(10, 11, EdgeData().finalize())])  # mutable intermediate edge
 
-        for tup in [(1, 2), (1, 3), (1, 8), (6, 7)]:  # unary operations
-            activation_cell.edges[tup[0], tup[1]].set("op", [
-                ops.Sequential(nn.Identity()),
-                # ops.Zero(stride=1),
-                # ops.Sequential(Power(2)),
-                # ops.Sequential(Power(3)),
-                # ops.Sequential(Power(.5)),
-                ops.Sequential(Sin()),
-                ops.Sequential(Cos()),
-                # ops.Sequential(Abs_op()),
-                ops.Sequential(Sign()),
-                # Todo add channel options
-                # ops.Sequential(Beta_mul()),
-                # ops.Sequential(Beta_add(channels=32)),
-                # ops.Sequential(Log()),
-                # ops.Sequential(Exp()),
-                # ops.Sequential(Sinh()),
-                # ops.Sequential(Cosh()),
-                # ops.Sequential(Tanh()),
-                # ops.Sequential(Asinh()),
-                # ops.Sequential(Acosh()),
-                # ops.Sequential(Atan()),
-                # ops.Sequential(Sinc()),
-                ops.Sequential(Maximum0()),
-                ops.Sequential(Minimum0()),
-                ops.Sequential(Sigmoid()),
-                # ops.Sequential(LogExp()),
-                # ops.Sequential(Exp2()),
-                # ops.Sequential(Erf()),
-                # Todo add channel options
-                # ops.Sequential(Beta(channels=16)),
-            ])
-
-        for tup in [(4, 5), (9, 10)]:
-            activation_cell.edges[tup[0], tup[1]].set("op", [
-                ops.Sequential(Add()),
-                ops.Sequential(Sub()),
-                # ops.Sequential(Mul()),
-                # ops.Sequential(Div()),
-                # ops.Sequential(Maximum()),
-                # ops.Sequential(Minimum()),
-                # ops.Sequential(SigMul()),
-                # Todo add channel options
-                # ops.Sequential(ExpBetaSub2(channels=32)),
-                #                 ops.Sequential(ExpBetaSubAbs(channels=32)),
-                #                 ops.Sequential(BetaMix(channels=32)),
-            ])
-
         # macroarchitecture definition
         self.name = 'makrograph'
         self.add_node(1)  # input
@@ -142,17 +94,29 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(3,
                       subgraph=activation_cell.copy().set_scope("activation_1").set_input([2]))  # activation cell 3
         self.nodes[3]['subgraph'].name = "activation_1"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, 32),
+            scope=f"activation_{1}",
+            private_edge_data=True, )
 
         self.add_node(4)
         self.add_node(5,
                       subgraph=activation_cell.copy().set_scope("activation_2").set_input([4]))  # activation cell 3
         self.nodes[5]['subgraph'].name = "activation_2"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, 32),
+            scope=f"activation_{2}",
+            private_edge_data=True, )
 
         self.add_node(6)
         # Todo add option here with a func which has a arg channels
         self.add_node(7,
                       subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
         self.nodes[7]['subgraph'].name = "activation_3"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, 32),
+            scope=f"activation_{3}",
+            private_edge_data=True, )
 
         self.add_edges_from([
             (1, 2, EdgeData()),
@@ -253,12 +217,20 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
         self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
+            scope=f"activation_{stage}",
+            private_edge_data=True, )
 
         self.add_node(start + 3)
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
         self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
+            scope=f"activation_{stage + 1}",
+            private_edge_data=True, )
 
         self.add_edges_from([
             (start, start + 1, EdgeData()),
@@ -279,12 +251,20 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
         self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, conv_option_a["out_channels"]),
+            scope=f"activation_{stage}",
+            private_edge_data=True, )
 
         self.add_node(start + 3)
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
         self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, conv_option_b["out_channels"]),
+            scope=f"activation_{stage + 1}",
+            private_edge_data=True, )
 
         self.add_edges_from([
             (start, start + 1, EdgeData()),
@@ -304,13 +284,56 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.edges[start + 2, start + 3].set('op',
                                              ops.Sequential(nn.Conv2d(**conv_option_a), ))  # convolutional edge
 
-    def _set_ops(self, edge):
-        edge.data.set('op', [
-            ops.Sequential(nn.ReLU()),
-            ops.Sequential(nn.Hardswish()),
-            ops.Sequential(nn.LeakyReLU()),
-            ops.Sequential(nn.Identity())
-        ])
+    def _set_ops(self, edge, channels=32):
+        print(edge.head, edge.tail)
+        # unary (1, 2), (1, 3), (1, 8), (6, 7)
+        if (edge.head, edge.tail) in {(1, 2), (1, 3), (1, 8), (6, 7)}:
+            edge.data.set("op", [
+                    ops.Sequential(nn.Identity()),
+                    # ops.Zero(stride=1),
+                    # ops.Sequential(Power(2)),
+                    # ops.Sequential(Power(3)),
+                    # ops.Sequential(Power(.5)),
+                    ops.Sequential(Sin()),
+                    ops.Sequential(Cos()),
+                    # ops.Sequential(Abs_op()),
+                    ops.Sequential(Sign()),
+                    # Todo add channel options
+                    # ops.Sequential(Beta_mul()),
+                    # ops.Sequential(Beta_add(channels=32)),
+                    # ops.Sequential(Log()),
+                    # ops.Sequential(Exp()),
+                    # ops.Sequential(Sinh()),
+                    # ops.Sequential(Cosh()),
+                    # ops.Sequential(Tanh()),
+                    # ops.Sequential(Asinh()),
+                    # ops.Sequential(Acosh()),
+                    # ops.Sequential(Atan()),
+                    # ops.Sequential(Sinc()),
+                    ops.Sequential(Maximum0()),
+                    ops.Sequential(Minimum0()),
+                    ops.Sequential(Sigmoid()),
+                    # ops.Sequential(LogExp()),
+                    # ops.Sequential(Exp2()),
+                    # ops.Sequential(Erf()),
+                    # Todo add channel options
+                    # ops.Sequential(Beta(channels=16)),
+                ])
+        # binary (4, 5), (9, 10)
+        elif (edge.head, edge.tail) in {(4, 5), (9, 10)}:
+            edge.data.set("op", [
+                    ops.Sequential(Add()),
+                    ops.Sequential(Sub()),
+                    # ops.Sequential(Mul()),
+                    # ops.Sequential(Div()),
+                    # ops.Sequential(Maximum()),
+                    # ops.Sequential(Minimum()),
+                    # ops.Sequential(SigMul()),
+                    # Todo add channel options
+                    ops.Sequential(ExpBetaSub2(channels=channels)),
+                    #                 ops.Sequential(ExpBetaSubAbs(channels=32)),
+                    #                 ops.Sequential(BetaMix(channels=32)),
+                ])
 
 
 config = utils.get_config_from_args(config_type='nas')
