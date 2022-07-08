@@ -95,7 +95,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                       subgraph=activation_cell.copy().set_scope("activation_1").set_input([2]))  # activation cell 3
         self.nodes[3]['subgraph'].name = "activation_1"
         self.update_edges(
-            update_func=lambda edge: self._set_ops(edge, 32),
+            update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{1}",
             private_edge_data=True, )
 
@@ -104,7 +104,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                       subgraph=activation_cell.copy().set_scope("activation_2").set_input([4]))  # activation cell 3
         self.nodes[5]['subgraph'].name = "activation_2"
         self.update_edges(
-            update_func=lambda edge: self._set_ops(edge, 32),
+            update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{2}",
             private_edge_data=True, )
 
@@ -114,7 +114,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                       subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
         self.nodes[7]['subgraph'].name = "activation_3"
         self.update_edges(
-            update_func=lambda edge: self._set_ops(edge, 32),
+            update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{3}",
             private_edge_data=True, )
 
@@ -285,7 +285,6 @@ class ActivationFuncResNet20SearchSpace(Graph):
                                              ops.Sequential(nn.Conv2d(**conv_option_a), ))  # convolutional edge
 
     def _set_ops(self, edge, channels=32):
-        print(edge.head, edge.tail)
         # unary (1, 2), (1, 3), (1, 8), (6, 7)
         if (edge.head, edge.tail) in {(1, 2), (1, 3), (1, 8), (6, 7)}:
             edge.data.set("op", [
