@@ -11,7 +11,7 @@ from IPython.display import clear_output
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, BetaMix
-from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta_mul, Beta_add, Log, Exp, Sinh, Cosh, \
+from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, Sinh, Cosh, \
     Tanh, Asinh, Acosh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
 
 
@@ -297,9 +297,8 @@ class ActivationFuncResNet20SearchSpace(Graph):
                     ops.Sequential(Cos()),
                     # ops.Sequential(Abs_op()),
                     ops.Sequential(Sign()),
-                    # Todo add channel options
                     # ops.Sequential(Beta_mul()),
-                    # ops.Sequential(Beta_add(channels=32)),
+                    ops.Sequential(Beta_add(channels=channels)),
                     # ops.Sequential(Log()),
                     # ops.Sequential(Exp()),
                     # ops.Sequential(Sinh()),
@@ -315,8 +314,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                     # ops.Sequential(LogExp()),
                     # ops.Sequential(Exp2()),
                     # ops.Sequential(Erf()),
-                    # Todo add channel options
-                    # ops.Sequential(Beta(channels=16)),
+                    # ops.Sequential(Beta(channels=channels)),
                 ])
         # binary (4, 5), (9, 10)
         elif (edge.head, edge.tail) in {(4, 5), (9, 10)}:
