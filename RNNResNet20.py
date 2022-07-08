@@ -336,7 +336,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 config = utils.get_config_from_args(config_type='nas')
 config.optimizer = 'darts'
-config.search.batch_size = 32
+config.search.batch_size = 16
 config.search.learning_rate = 0.5
 utils.set_seed(config.seed)
 clear_output(wait=True)
@@ -351,7 +351,7 @@ search_space = ActivationFuncResNet20SearchSpace()
 
 optimizer = DARTSOptimizer(config)
 optimizer.adapt_search_space(search_space)
-
+# with torch.autograd.set_detect_anomaly(True):
 trainer = Trainer(optimizer, config)
 trainer.search()
 
