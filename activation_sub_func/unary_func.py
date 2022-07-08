@@ -1,6 +1,8 @@
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 
+
+# unary
 class Power(AbstractPrimitive):
     def __init__(self, power):
         super().__init__(locals())
@@ -8,6 +10,18 @@ class Power(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         return torch.pow(x, self.power)
+
+    def get_embedded_ops(self):
+        return None
+
+
+class Sqrt(AbstractPrimitive):
+    def __init__(self, eps=1e-10):
+        super().__init__(locals())
+        self.eps = eps
+
+    def forward(self, x, edge_data=None):
+        return torch.pow(torch.maximum(x, torch.tensor(self.eps).repeat(x.shape).cuda()), .5)
 
     def get_embedded_ops(self):
         return None
@@ -60,22 +74,22 @@ class Sign(AbstractPrimitive):
 class Beta_mul(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
-        # self.beta = torch.nn.Parameter(torch.ones(channels))
+        self.beta = torch.nn.Parameter(torch.ones(channels))
 
     def forward(self, x, edge_data=None):
-        return x * torch.ones_like(x).cuda()
+        return x * self.beta
 
     def get_embedded_ops(self):
         return None
 
 
 class Beta_add(AbstractPrimitive):
-    def __init__(self):
+    def __init__(self, channels):
         super().__init__(locals())
-        # self.beta = torch.nn.Parameter(torch.ones(channels))
+        self.beta = torch.nn.Parameter(torch.ones(channels))
 
     def forward(self, x, edge_data=None):
-        return x + torch.ones_like(x).cuda()
+        return x + self.beta
 
     def get_embedded_ops(self):
         return None
@@ -87,7 +101,7 @@ class Log(AbstractPrimitive):
         self.eps = eps
 
     def forward(self, x, edge_data=None):
-        return torch.log(x + self.eps)
+        return torch.log(torch.maximum(x, torch.tensor(self.eps).repeat(x.shape).cuda()))
 
     def get_embedded_ops(self):
         return None
@@ -98,7 +112,9 @@ class Exp(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        return torch.exp(x)
+        x = torch.exp(x)
+        x = torch.clamp(x, max=88)
+        return x
 
     def get_embedded_ops(self):
         return None
@@ -109,6 +125,7 @@ class Sinh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = torch.clamp(x, min=-89, max=89)
         return torch.sinh(x)
 
     def get_embedded_ops(self):
@@ -120,6 +137,7 @@ class Cosh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = torch.clamp(x, min=-89, max=89)
         return torch.cosh(x)
 
     def get_embedded_ops(self):
@@ -186,7 +204,7 @@ class Maximum0(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        return torch.maximum(x, torch.zeros_like(x).cuda())
+        return torch.maximum(x, torch.zeros(x.shape).cuda())
 
     def get_embedded_ops(self):
         return None
@@ -197,7 +215,7 @@ class Minimum0(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        return torch.minimum(x, torch.zeros_like(x).cuda())
+        return torch.minimum(x, torch.zeros(x.shape).cuda())
 
     def get_embedded_ops(self):
         return None
@@ -219,7 +237,9 @@ class LogExp(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        return torch.log(1 + torch.exp(x))
+        x = torch.log(1 + torch.exp(x))
+        x = torch.clamp(x, max=88)
+        return x
 
     def get_embedded_ops(self):
         return None
@@ -250,10 +270,10 @@ class Erf(AbstractPrimitive):
 class Beta(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
-        # self.beta = torch.nn.Parameter(torch.ones(channels))
+        self.beta = torch.nn.Parameter(torch.ones(channels))
 
     def forward(self, x, edge_data=None):
-        return torch.ones_like(x).cuda()
+        return self.beta
 
     def get_embedded_ops(self):
         return None

@@ -2,6 +2,7 @@ import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 
 
+# binary
 class Add(AbstractPrimitive):
     def __init__(self):
         super().__init__(locals())
@@ -83,7 +84,7 @@ class SigMul(AbstractPrimitive):
 class ExpBetaSub2(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
-        self.beta = torch.ones(1, channels, 1, 1).cuda()
+        self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
         return torch.exp(-self.beta * torch.pow(torch.sub(x[0], x[1]), 2))
@@ -95,7 +96,7 @@ class ExpBetaSub2(AbstractPrimitive):
 class ExpBetaSubAbs(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
-        self.beta = torch.nn.Parameter(torch.ones(channels))
+        self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
         return torch.exp(-self.beta * torch.abs(torch.sub(x[0], x[1])))
@@ -107,7 +108,7 @@ class ExpBetaSubAbs(AbstractPrimitive):
 class BetaMix(AbstractPrimitive):
     def __init__(self, channels):
         super().__init__(locals())
-        self.beta = torch.nn.Parameter(torch.ones(channels))
+        self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
         return torch.add(-self.beta * x[0], (1 - self.beta) * x[1])
