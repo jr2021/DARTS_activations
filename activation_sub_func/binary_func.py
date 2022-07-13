@@ -2,12 +2,12 @@ import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 
 
-# binary
 class Add(AbstractPrimitive):
     def __init__(self):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.add(x[0], x[1])
 
     def get_embedded_ops(self):
@@ -19,6 +19,7 @@ class Sub(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.sub(x[0], x[1])
 
     def get_embedded_ops(self):
@@ -30,6 +31,7 @@ class Mul(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.mul(x[0], x[1])
 
     def get_embedded_ops(self):
@@ -42,6 +44,7 @@ class Div(AbstractPrimitive):
         self.eps = eps
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.div(x[0], x[1] + self.eps)
 
     def get_embedded_ops(self):
@@ -53,6 +56,7 @@ class Maximum(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.maximum(x[0], x[1])
 
     def get_embedded_ops(self):
@@ -64,6 +68,7 @@ class Minimum(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.minimum(x[0], x[1])
 
     def get_embedded_ops(self):
@@ -75,6 +80,7 @@ class SigMul(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.mul(torch.sigmoid(x[0]), x[1])
 
     def get_embedded_ops(self):
@@ -87,6 +93,7 @@ class ExpBetaSub2(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.exp(-self.beta * torch.pow(torch.sub(x[0], x[1]), 2))
 
     def get_embedded_ops(self):
@@ -99,6 +106,7 @@ class ExpBetaSubAbs(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.exp(-self.beta * torch.abs(torch.sub(x[0], x[1])))
 
     def get_embedded_ops(self):
@@ -111,7 +119,16 @@ class BetaMix(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.add(-self.beta * x[0], (1 - self.beta) * x[1])
 
     def get_embedded_ops(self):
         return None
+
+
+class Stack():
+    def __init__(self):
+        pass
+
+    def __call__(self, tensors, edges_data=None):
+        return torch.stack(tensors)

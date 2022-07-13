@@ -11,33 +11,10 @@ from IPython.display import clear_output
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, \
-    BetaMix
+    BetaMix, Stack
 from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
-    Tanh, Asinh, Acosh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
-
-
-class Stack(AbstractPrimitive):
-    def __init__(self):
-        super().__init__(locals())
-
-    def forward(self, x, edge_data=None):
-        return [x[0], x[1]]
-
-    def get_embedded_ops(self):
-        return None
-
-
-class UnStack(AbstractPrimitive):
-    def __init__(self, dim=1):
-        super().__init__(locals())
-        self.dim = dim
-
-    def forward(self, x, edge_data=None):
-        return x[self.dim]
-
-    def get_embedded_ops(self):
-        return None
+    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
 
 
 class ActivationFuncResNet20SearchSpace(Graph):
@@ -307,7 +284,6 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Cosh(),
                 Tanh(),
                 Asinh(),
-                Acosh(),
                 Atan(),
                 Sinc(),
                 Maximum0(),
@@ -336,7 +312,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 config = utils.get_config_from_args(config_type='nas')
 config.optimizer = 'darts'
-config.search.batch_size = 32
+config.search.batch_size = 16
 config.search.learning_rate = 0.05
 utils.set_seed(config.seed)
 clear_output(wait=True)

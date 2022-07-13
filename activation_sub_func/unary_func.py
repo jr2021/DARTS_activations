@@ -8,6 +8,7 @@ class Power(AbstractPrimitive):
         self.power = power
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.pow(x, self.power)
 
     def get_embedded_ops(self):
@@ -20,6 +21,7 @@ class Sqrt(AbstractPrimitive):
         self.eps = eps
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.pow(torch.maximum(x, torch.tensor(self.eps).repeat(x.shape).cuda()), .5)
 
     def get_embedded_ops(self):
@@ -31,6 +33,7 @@ class Sin(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.sin(x)
 
     def get_embedded_ops(self):
@@ -42,6 +45,7 @@ class Cos(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.cos(x)
 
     def get_embedded_ops(self):
@@ -53,6 +57,7 @@ class Abs_op(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.abs(x)
 
     def get_embedded_ops(self):
@@ -64,6 +69,7 @@ class Sign(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return x * -1
 
     def get_embedded_ops(self):
@@ -76,6 +82,7 @@ class Beta_mul(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return x * self.beta
 
     def get_embedded_ops(self):
@@ -88,6 +95,7 @@ class Beta_add(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return x + self.beta
 
     def get_embedded_ops(self):
@@ -100,6 +108,7 @@ class Log(AbstractPrimitive):
         self.eps = eps
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.log(torch.maximum(x, torch.tensor(self.eps).repeat(x.shape).cuda()))
 
     def get_embedded_ops(self):
@@ -111,8 +120,8 @@ class Exp(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         x = torch.exp(x)
-        x = torch.clamp(x, max=88)
         return x
 
     def get_embedded_ops(self):
@@ -124,7 +133,7 @@ class Sinh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = torch.clamp(x, min=-89, max=89)
+        x = x.clamp(-10, 10)
         return torch.sinh(x)
 
     def get_embedded_ops(self):
@@ -136,7 +145,7 @@ class Cosh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = torch.clamp(x, min=-89, max=89)
+        x = x.clamp(-10, 10)
         return torch.cosh(x)
 
     def get_embedded_ops(self):
@@ -148,6 +157,7 @@ class Tanh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.tanh(x)
 
     def get_embedded_ops(self):
@@ -159,18 +169,8 @@ class Asinh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.asinh(x)
-
-    def get_embedded_ops(self):
-        return None
-
-
-class Acosh(AbstractPrimitive):
-    def __init__(self):
-        super().__init__(locals())
-
-    def forward(self, x, edge_data=None):
-        return torch.acosh(x)
 
     def get_embedded_ops(self):
         return None
@@ -181,6 +181,7 @@ class Atan(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.atan(x)
 
     def get_embedded_ops(self):
@@ -192,6 +193,7 @@ class Sinc(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.sinc(x)
 
     def get_embedded_ops(self):
@@ -203,6 +205,7 @@ class Maximum0(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.maximum(x, torch.zeros(x.shape).cuda())
 
     def get_embedded_ops(self):
@@ -214,6 +217,7 @@ class Minimum0(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.minimum(x, torch.zeros(x.shape).cuda())
 
     def get_embedded_ops(self):
@@ -225,6 +229,7 @@ class Sigmoid(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.sigmoid(x)
 
     def get_embedded_ops(self):
@@ -236,8 +241,8 @@ class LogExp(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         x = torch.log(1 + torch.exp(x))
-        x = torch.clamp(x, max=88)
         return x
 
     def get_embedded_ops(self):
@@ -249,6 +254,7 @@ class Exp2(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.exp(-torch.pow(x, 2))
 
     def get_embedded_ops(self):
@@ -260,6 +266,7 @@ class Erf(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return torch.erf(x)
 
     def get_embedded_ops(self):
@@ -272,6 +279,7 @@ class Beta(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
         return self.beta
 
     def get_embedded_ops(self):
