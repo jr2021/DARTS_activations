@@ -269,9 +269,9 @@ class ActivationFuncResNet20SearchSpace(Graph):
             edge.data.set("op", [
                 ops.Identity(),
                 ops.Zero(stride=1),
-                Power(2),
-                Power(3),
-                Power(.5),
+                # Power(2),
+                # Power(3),
+                # Power(.5),
                 Sin(),
                 Cos(),
                 Abs_op(),
@@ -300,9 +300,9 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Add(),
                 Sub(),
                 Mul(),
-                Div(),
+                # Div(),
                 Maximum(),
-                # Minimum(),
+                Minimum(),
                 SigMul(),
                 ExpBetaSub2(channels=channels),
                 ExpBetaSubAbs(channels=channels),
@@ -312,7 +312,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 config = utils.get_config_from_args(config_type='nas')
 config.optimizer = 'darts'
-config.search.batch_size = 16
+config.search.batch_size = 8
 config.search.learning_rate = 0.05
 utils.set_seed(config.seed)
 clear_output(wait=True)
