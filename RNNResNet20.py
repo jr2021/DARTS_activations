@@ -312,8 +312,9 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 config = utils.get_config_from_args(config_type='nas')
 config.optimizer = 'darts'
-config.search.batch_size = 32
+config.search.batch_size = 16
 config.search.learning_rate = 0.05
+config.search.epochs = 1
 utils.set_seed(config.seed)
 clear_output(wait=True)
 utils.log_args(config)
