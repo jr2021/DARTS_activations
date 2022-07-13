@@ -302,7 +302,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Mul(),
                 Div(),
                 Maximum(),
-                Minimum(),
+                # Minimum(),
                 SigMul(),
                 ExpBetaSub2(channels=channels),
                 ExpBetaSubAbs(channels=channels),

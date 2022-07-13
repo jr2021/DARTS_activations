@@ -9,10 +9,13 @@ class Power(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         if self.power < 1:
-            x = x.clamp(0, 10)
+            x = x.clamp(0, 5)
         else:
-            x = x.clamp(-10, 10)
+            x = x.clamp(-5, 5)
         result = torch.pow(x, self.power)
+        if torch.sum(torch.isnan(result)) != 0:
+            print(x)
+            print(self.power)
         assert torch.sum(torch.isnan(result)) == 0
         return result
 
