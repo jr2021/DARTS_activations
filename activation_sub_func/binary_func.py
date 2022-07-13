@@ -8,7 +8,9 @@ class Add(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.add(x[0], x[1])
+        result = torch.add(x[0], x[1])
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -20,7 +22,9 @@ class Sub(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.sub(x[0], x[1])
+        result = torch.sub(x[0], x[1])
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -32,7 +36,9 @@ class Mul(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.mul(x[0], x[1])
+        result = torch.mul(x[0], x[1])
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -45,7 +51,9 @@ class Div(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.div(x[0], x[1] + self.eps)
+        result = torch.div(x[0], x[1] + self.eps)
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -57,7 +65,9 @@ class Maximum(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.maximum(x[0], x[1])
+        result = torch.maximum(x[0], x[1])
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -69,7 +79,9 @@ class Minimum(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.minimum(x[0], x[1])
+        result = torch.minimum(x[0], x[1])
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -81,7 +93,9 @@ class SigMul(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.mul(torch.sigmoid(x[0]), x[1])
+        result = torch.mul(torch.sigmoid(x[0]), x[1])
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -94,7 +108,9 @@ class ExpBetaSub2(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.exp(-self.beta * torch.pow(torch.sub(x[0], x[1]), 2))
+        result = torch.exp(-self.beta * torch.pow(torch.sub(x[0], x[1]), 2))
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -107,7 +123,9 @@ class ExpBetaSubAbs(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.exp(-self.beta * torch.abs(torch.sub(x[0], x[1])))
+        result = torch.exp(-self.beta * torch.abs(torch.sub(x[0], x[1])))
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -120,7 +138,9 @@ class BetaMix(AbstractPrimitive):
 
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
-        return torch.add(-self.beta * x[0], (1 - self.beta) * x[1])
+        result = torch.add(-self.beta * x[0], (1 - self.beta) * x[1])
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
 
     def get_embedded_ops(self):
         return None
@@ -131,4 +151,6 @@ class Stack():
         pass
 
     def __call__(self, tensors, edges_data=None):
-        return torch.stack(tensors)
+        result = torch.stack(tensors)
+        assert torch.sum(torch.isnan(result)) == 0
+        return result
