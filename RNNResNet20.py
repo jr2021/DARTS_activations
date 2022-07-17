@@ -108,11 +108,17 @@ class ActivationFuncResNet20SearchSpace(Graph):
         ])
 
         self.edges[1, 2].set('op',
-                             ops.Sequential(nn.Conv2d(3, 16, 3, padding=1), ))  # convolutional edge
+                             ops.Sequential(
+                                 nn.BatchNorm2d(3),
+                                 nn.Conv2d(3, 16, 3, padding=1), ))  # convolutional edge
         self.edges[3, 4].set('op',
-                             ops.Sequential(nn.Conv2d(16, 16, 3, padding=1), ))  # convolutional edge
+                             ops.Sequential(
+                                 nn.BatchNorm2d(16),
+                                 nn.Conv2d(16, 16, 3, padding=1), ))  # convolutional edge
         self.edges[5, 6].set('op',
-                             ops.Sequential(nn.Conv2d(16, 16, 3, padding=1), ))  # convolutional edge
+                             ops.Sequential(
+                                 nn.BatchNorm2d(16),
+                                 nn.Conv2d(16, 16, 3, padding=1), ))  # convolutional edge
 
         conv_option = {
             "in_channels": 16,
@@ -220,9 +226,13 @@ class ActivationFuncResNet20SearchSpace(Graph):
         ])
 
         self.edges[start, start + 1].set('op',
-                                         ops.Sequential(nn.Conv2d(**conv_option), ))  # convolutional edge
+                                         ops.Sequential(
+                                             nn.BatchNorm2d(conv_option["in_channels"]),
+                                             nn.Conv2d(**conv_option), ))  # convolutional edge
         self.edges[start + 2, start + 3].set('op',
-                                             ops.Sequential(nn.Conv2d(**conv_option), ))  # convolutional edge
+                                             ops.Sequential(
+                                                 nn.BatchNorm2d(conv_option["in_channels"]),
+                                                 nn.Conv2d(**conv_option), ))  # convolutional edge
 
     def _create_reduction_block(self, start: int, stage: int, cell, conv_option_a: dict, conv_option_b: dict):
         self.add_node(start + 1)
@@ -254,14 +264,20 @@ class ActivationFuncResNet20SearchSpace(Graph):
         ])
 
         self.edges[start, start + 1].set('op',
-                                         ops.Sequential(nn.Conv2d(**conv_option_a), ))  # convolutional edge
+                                         ops.Sequential(
+                                             nn.BatchNorm2d(conv_option_a["in_channels"]),
+                                             nn.Conv2d(**conv_option_a), ))  # convolutional edge
         conv_option_a["in_channels"] = conv_option_a["out_channels"]
         conv_option_a["stride"] = 1
 
         self.edges[start, start + 3].set('op',
-                                         ops.Sequential(nn.Conv2d(**conv_option_b), ))  # convolutional edge
+                                         ops.Sequential(
+                                             nn.BatchNorm2d(conv_option_b["in_channels"]),
+                                             nn.Conv2d(**conv_option_b), ))  # convolutional edge
         self.edges[start + 2, start + 3].set('op',
-                                             ops.Sequential(nn.Conv2d(**conv_option_a), ))  # convolutional edge
+                                             ops.Sequential(
+                                                 nn.BatchNorm2d(conv_option_a["in_channels"]),
+                                                 nn.Conv2d(**conv_option_a), ))  # convolutional edge
 
     def _set_ops(self, edge, channels=32):
         # unary (1, 2), (1, 3), (1, 8), (6, 7)
@@ -273,7 +289,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 # Power(3),
                 # Power(.5),
                 Sin(),
-                Cos(),
+                # Cos(),
                 Abs_op(),
                 Sign(),
                 Beta_mul(channels=channels),
@@ -281,11 +297,11 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Log(),
                 Exp(),
                 Sinh(),
-                Cosh(),
+                # Cosh(),
                 Tanh(),
                 Asinh(),
                 Atan(),
-                Sinc(),
+                # Sinc(),
                 Maximum0(),
                 Minimum0(),
                 Sigmoid(),
@@ -300,7 +316,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Add(),
                 Sub(),
                 Mul(),
-                # Div(),
+                Div(),
                 Maximum(),
                 Minimum(),
                 SigMul(),
