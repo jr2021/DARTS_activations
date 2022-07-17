@@ -103,8 +103,6 @@ class Trainer(object):
             self.optimizer.new_epoch(e)
 
             if self.optimizer.using_step_function:
-                history_train = []
-                history_val = []
                 for step, data_train in enumerate(self.train_queue):
                     data_train = (data_train[0].to(self.device), data_train[1].to(self.device, non_blocking=True))
                     data_val = next(iter(self.valid_queue))
@@ -112,8 +110,10 @@ class Trainer(object):
 
                     stats = self.optimizer.step(data_train, data_val)
                     logits_train, logits_val, train_loss, val_loss = stats
-                    history_train.append(train_loss)
-                    history_val.append(val_loss)
+
+                    log_every_n_seconds(logging.INFO,
+                                        "Epoch {}-{}, Train loss: {:.5f}, validation loss: {:.5f}".format(
+                                            e, step, train_loss, val_loss, n=5))
 
                     self._store_accuracies(logits_train, data_train[1], 'train')
                     self._store_accuracies(logits_val, data_val[1], 'val')
@@ -123,10 +123,6 @@ class Trainer(object):
 
                     self.train_loss.update(float(train_loss.detach().cpu()))
                     self.val_loss.update(float(val_loss.detach().cpu()))
-
-                log_every_n_seconds(logging.INFO,
-                                    "Epoch {}, Train loss: {:.5f}, validation loss: {:.5f}".format(
-                                        e, torch.mean(history_train), torch.mean(history_val), n=5))
                     
                 self.scheduler.step()
 
