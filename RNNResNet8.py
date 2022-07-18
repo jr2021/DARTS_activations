@@ -14,18 +14,8 @@ from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div
     BetaMix, Stack
 from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
-    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
+    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
 import argparse
-
-
-
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('ac_func', type=str, default="small")  # huge
-parser.add_argument('batch_size', type=int, default=32)
-parser.add_argument('lr', type=float, default=0.05)
-parser.add_argument('epoch', type=int, default=200)
-
-args = parser.parse_args()
 
 
 class ActivationFuncResNet20SearchSpace(Graph):
@@ -39,7 +29,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
     QUERYABLE = False
 
-    def __init__(self):
+    def __init__(self, size="small"):
         super().__init__()
 
         # cell definition
@@ -59,23 +49,27 @@ class ActivationFuncResNet20SearchSpace(Graph):
         activation_cell.add_node(5)  # binary node / output node
         activation_cell.add_edges_from([(4, 5, EdgeData())])  # mutable intermediate edge
 
-        activation_cell.add_node(6)
-        activation_cell.add_edges_from([(5, 6, EdgeData().finalize())])  # unary node / intermediate node
-        activation_cell.add_node(7)
-        activation_cell.add_edges_from([(6, 7, EdgeData())])  # mutable intermediate edge
-        activation_cell.add_node(8)
-        activation_cell.add_edges_from([(1, 8, EdgeData())])  # mutable intermediate edge
+        if size == "huge":
+            activation_cell.add_node(6)
+            activation_cell.add_edges_from([(5, 6, EdgeData().finalize())])  # unary node / intermediate node
+            activation_cell.add_node(7)
+            activation_cell.add_edges_from([(6, 7, EdgeData())])  # mutable intermediate edge
+            activation_cell.add_node(8)
+            activation_cell.add_edges_from([(1, 8, EdgeData())])  # mutable intermediate edge
 
-        activation_cell.add_node(9)
-        activation_cell.add_edges_from([(8, 9, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.add_edges_from([(7, 9, EdgeData().finalize())])  # mutable intermediate edge
-        activation_cell.nodes[9]['comb_op'] = Stack()
+            activation_cell.add_node(9)
+            activation_cell.add_edges_from([(8, 9, EdgeData().finalize())])  # mutable intermediate edge
+            activation_cell.add_edges_from([(7, 9, EdgeData().finalize())])  # mutable intermediate edge
+            activation_cell.nodes[9]['comb_op'] = Stack()
 
-        activation_cell.add_node(10)
-        activation_cell.add_edges_from([(9, 10, EdgeData())])  # mutable intermediate edge
+            activation_cell.add_node(10)
+            activation_cell.add_edges_from([(9, 10, EdgeData())])  # mutable intermediate edge
 
-        activation_cell.add_node(11)
-        activation_cell.add_edges_from([(10, 11, EdgeData().finalize())])  # mutable intermediate edge
+            activation_cell.add_node(11)
+            activation_cell.add_edges_from([(10, 11, EdgeData().finalize())])  # mutable intermediate edge
+        else:
+            activation_cell.add_node(6)
+            activation_cell.add_edges_from([(5, 6, EdgeData().finalize())])  # mutable intermediate edge
 
         # macroarchitecture definition
         self.name = 'makrograph'
@@ -98,37 +92,33 @@ class ActivationFuncResNet20SearchSpace(Graph):
             scope=f"activation_{2}",
             private_edge_data=True, )
 
-        if args.ac_func == "huge":
-            self.add_node(6)
-            self.add_node(7,
-                          subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
-            self.nodes[7]['subgraph'].name = "activation_3"
-            self.update_edges(
-                update_func=lambda edge: self._set_ops(edge, 16),
-                scope=f"activation_{3}",
-                private_edge_data=True, )
-
-            self.add_edges_from([
-                (5, 6, EdgeData()),
-                (3, 6, EdgeData()),
-                (6, 7, EdgeData())
-            ])
-
-            self.edges[5, 6].set('op',
-                                 ops.Sequential(
-                                     nn.Conv2d(16, 16, 3, padding=1), nn.BatchNorm2d(16)))  # convolutional edge
+        self.add_node(6)
+        self.add_node(7,
+                      subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
+        self.nodes[7]['subgraph'].name = "activation_3"
+        self.update_edges(
+            update_func=lambda edge: self._set_ops(edge, 16),
+            scope=f"activation_{3}",
+            private_edge_data=True, )
 
         self.add_edges_from([
             (1, 2, EdgeData()),
             (2, 3, EdgeData()),
             (3, 4, EdgeData()),
             (4, 5, EdgeData()),
+            (5, 6, EdgeData()),
+            (3, 6, EdgeData()),
+            (6, 7, EdgeData())
         ])
 
         self.edges[1, 2].set('op',
                              ops.Sequential(
                                  nn.Conv2d(3, 16, 3, padding=1), nn.BatchNorm2d(16)))  # convolutional edge
         self.edges[3, 4].set('op',
+                             ops.Sequential(
+                                 nn.Conv2d(16, 16, 3, padding=1), nn.BatchNorm2d(16)))  # convolutional edge
+
+        self.edges[5, 6].set('op',
                              ops.Sequential(
                                  nn.Conv2d(16, 16, 3, padding=1), nn.BatchNorm2d(16)))  # convolutional edge
 
@@ -247,11 +237,11 @@ class ActivationFuncResNet20SearchSpace(Graph):
             edge.data.set("op", [
                 ops.Identity(),
                 ops.Zero(stride=1),
-                # Power(2),
-                # Power(3),
-                # Power(.5),
+                Power(2),
+                Power(3),
+                Sqrt(),
                 Sin(),
-                # Cos(),
+                Cos(),
                 Abs_op(),
                 Sign(),
                 Beta_mul(channels=channels),
@@ -259,11 +249,11 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Log(),
                 Exp(),
                 Sinh(),
-                # Cosh(),
+                Cosh(),
                 Tanh(),
                 Asinh(),
                 Atan(),
-                # Sinc(),
+                Sinc(),
                 Maximum0(),
                 Minimum0(),
                 Sigmoid(),
@@ -288,26 +278,27 @@ class ActivationFuncResNet20SearchSpace(Graph):
             ])
 
 
-config = utils.get_config_from_args(config_type='nas')
-config.optimizer = 'darts'
-config.search.batch_size = args.batch_size
-config.search.learning_rate = args.lr
-config.search.epochs = args.epoch
-utils.set_seed(config.seed)
-clear_output(wait=True)
-utils.log_args(config)
+if __name__ == '__main__':
+    config = utils.get_config_from_args(config_type='nas')
+    config.optimizer = 'darts'
+    config.search.batch_size = 32
+    config.search.learning_rate = 0.05
+    config.search.epochs = 100
+    utils.set_seed(config.seed)
+    clear_output(wait=True)
+    utils.log_args(config)
 
-logger = setup_logger(config.save + '/log.log')
-logger.setLevel(logging.INFO)
+    logger = setup_logger(config.save + '/log.log')
+    logger.setLevel(logging.INFO)
 
-search_space = ActivationFuncResNet20SearchSpace()
-# nx.draw_kamada_kawai(search_space)
-# plt.show()
+    search_space = ActivationFuncResNet20SearchSpace()
+    # nx.draw_kamada_kawai(search_space)
+    # plt.show()
 
-optimizer = DARTSOptimizer(config)
-optimizer.adapt_search_space(search_space)
-# with torch.autograd.set_detect_anomaly(True):
-trainer = Trainer(optimizer, config)
-trainer.search()
+    optimizer = DARTSOptimizer(config)
+    optimizer.adapt_search_space(search_space)
+    # with torch.autograd.set_detect_anomaly(True):
+    trainer = Trainer(optimizer, config)
+    trainer.search()
 
-trainer.evaluate_oneshot()
+    trainer.evaluate_oneshot()
