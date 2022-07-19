@@ -286,7 +286,7 @@ if __name__ == '__main__':
     config.search.batch_size = 64
     config.search.epochs = 100
     config.run_id = time.time()
-    config.save = '{}/{}/{}/{}'.format(config.out_dir, config.dataset, config.optimizer, config.seed, config.run_id)
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.seed}/{config.run_id}'
     clear_output(wait=True)
     utils.log_args(config)
     torch.manual_seed(config.search.seed)
