@@ -16,6 +16,7 @@ from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, 
     Sinh, Cosh, \
     Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
 import argparse
+import time
 
 
 class ActivationFuncResNet20SearchSpace(Graph):
@@ -284,7 +285,7 @@ if __name__ == '__main__':
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100
-    config.run_id = 'exp'
+    config.run_id = time.time()
     config.save = '{}/{}/{}/{}'.format(config.out_dir, config.dataset, config.optimizer, config.seed, config.run_id)
     clear_output(wait=True)
     utils.log_args(config)
