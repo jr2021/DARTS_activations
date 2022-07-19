@@ -8,10 +8,7 @@ class Power(AbstractPrimitive):
         self.power = power
 
     def forward(self, x, edge_data=None):
-        if self.power < 1:
-            x = x.clamp(0, 10)
-        else:
-            x = x.clamp(-5, 5)
+        # x = x.clamp(-10, 10)
         result = torch.pow(x, self.power)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -26,7 +23,7 @@ class Sqrt(AbstractPrimitive):
         self.eps = eps
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.pow(torch.maximum(x, torch.tensor(self.eps).repeat(x.shape).cuda()), .5)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -40,7 +37,7 @@ class Sin(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.sin(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -54,7 +51,7 @@ class Cos(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.cos(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -68,7 +65,7 @@ class Abs_op(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.abs(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -82,7 +79,7 @@ class Sign(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = x * -1
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -97,7 +94,7 @@ class Beta_mul(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = x * self.beta
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -112,7 +109,7 @@ class Beta_add(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = x + self.beta
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -127,7 +124,7 @@ class Log(AbstractPrimitive):
         self.eps = eps
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.log(torch.maximum(x, torch.tensor(self.eps).repeat(x.shape).cuda()))
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -141,7 +138,7 @@ class Exp(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         x = torch.exp(x)
         result = x
         assert torch.sum(torch.isnan(result)) == 0
@@ -156,7 +153,7 @@ class Sinh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.sinh(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -170,7 +167,7 @@ class Cosh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.cosh(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -184,7 +181,7 @@ class Tanh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.tanh(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -198,7 +195,7 @@ class Asinh(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.asinh(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -212,7 +209,7 @@ class Atan(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.atan(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -226,7 +223,7 @@ class Sinc(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.sinc(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -240,7 +237,7 @@ class Maximum0(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.maximum(x, torch.zeros(x.shape).cuda())
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -254,7 +251,7 @@ class Minimum0(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.minimum(x, torch.zeros(x.shape).cuda())
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -268,7 +265,7 @@ class Sigmoid(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.sigmoid(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -282,7 +279,7 @@ class LogExp(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         x = torch.log(1 + torch.exp(x))
         result = x
         assert torch.sum(torch.isnan(result)) == 0
@@ -297,7 +294,7 @@ class Exp2(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.exp(-torch.pow(x, 2))
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -311,7 +308,7 @@ class Erf(AbstractPrimitive):
         super().__init__(locals())
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = torch.erf(x)
         assert torch.sum(torch.isnan(result)) == 0
         return result
@@ -326,7 +323,7 @@ class Beta(AbstractPrimitive):
         self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
 
     def forward(self, x, edge_data=None):
-        x = x.clamp(-10, 10)
+        # x = x.clamp(-10, 10)
         result = self.beta
         assert torch.sum(torch.isnan(result)) == 0
         return result

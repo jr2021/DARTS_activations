@@ -66,6 +66,7 @@ class Trainer(object):
              'runtime': [],
              'train_time': [],
              'arch_eval': [],
+             'alphas': [],
              'params': n_parameters}
         )
 
@@ -101,7 +102,7 @@ class Trainer(object):
             
             start_time = time.time()
             self.optimizer.new_epoch(e)
-
+            architectural_weights = []
             if self.optimizer.using_step_function:
                 for step, data_train in enumerate(self.train_queue):
                     data_train = (data_train[0].to(self.device), data_train[1].to(self.device, non_blocking=True))
@@ -123,6 +124,7 @@ class Trainer(object):
 
                     self.train_loss.update(float(train_loss.detach().cpu()))
                     self.val_loss.update(float(val_loss.detach().cpu()))
+                    architectural_weights.append([list(i.cpu().detach().numpy()) for i in self.optimizer.architectural_weights])
                     
                 self.scheduler.step()
 
@@ -133,6 +135,7 @@ class Trainer(object):
                 self.errors_dict.valid_acc.append(self.val_top1.avg)
                 self.errors_dict.valid_loss.append(self.val_loss.avg)
                 self.errors_dict.runtime.append(end_time - start_time)
+                self.errors_dict.alphas.append(str(architectural_weights))
             else:
                 end_time = time.time()
                 # TODO: nasbench101 does not have train_loss, valid_loss, test_loss implemented, so this is a quick fix for now

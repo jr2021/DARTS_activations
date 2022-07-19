@@ -24,7 +24,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
     """
 
     OPTIMIZER_SCOPE = [
-        f"activation_{i}" for i in range(1, 20)
+        f"activation_{i}" for i in range(1, 8)
     ]
 
     QUERYABLE = False
@@ -77,7 +77,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(2)  # intermediate
         self.add_node(3,
                       subgraph=activation_cell.copy().set_scope("activation_1").set_input([2]))  # activation cell 3
-        self.nodes[3]['subgraph'].name = "activation_1"
+        #self.nodes[3]['subgraph'].name = "activation_1"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{1}",
@@ -86,7 +86,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(4)
         self.add_node(5,
                       subgraph=activation_cell.copy().set_scope("activation_2").set_input([4]))  # activation cell 3
-        self.nodes[5]['subgraph'].name = "activation_2"
+        #self.nodes[5]['subgraph'].name = "activation_2"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{2}",
@@ -95,7 +95,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(6)
         self.add_node(7,
                       subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
-        self.nodes[7]['subgraph'].name = "activation_3"
+        #self.nodes[7]['subgraph'].name = "activation_3"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{3}",
@@ -153,7 +153,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-        self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        #self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage}",
@@ -163,7 +163,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-        self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -191,7 +191,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-        self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+       # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_a["out_channels"]),
             scope=f"activation_{stage}",
@@ -201,7 +201,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-        self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_b["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -281,13 +281,13 @@ class ActivationFuncResNet20SearchSpace(Graph):
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
     config.optimizer = 'darts'
-    config.search.batch_size = 32
-    config.search.learning_rate = 0.05
-    config.search.epochs = 100
+    config.search.batch_size = 64
+    config.search.learning_rate = 0.01
+    config.search.epochs = 10
     utils.set_seed(config.seed)
     clear_output(wait=True)
     utils.log_args(config)
-
+    torch.manual_seed(config.search.seed)
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
