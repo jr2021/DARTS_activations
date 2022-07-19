@@ -280,14 +280,16 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'darts'
-    config.search.batch_size = 64
-    config.search.learning_rate = 0.01
-    config.search.epochs = 10
+    config.optimizer = 'darts'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
+    config.search.batch_size = 64
+    config.search.epochs = 100
+    config.run_id = 'exp'
+    config.save = '{}/{}/{}/{}'.format(config.out_dir, config.dataset, config.optimizer, config.seed, config.run_id)
     clear_output(wait=True)
     utils.log_args(config)
     torch.manual_seed(config.search.seed)
+
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
