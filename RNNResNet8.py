@@ -286,9 +286,17 @@ if __name__ == '__main__':
     config.search.batch_size = 64
     config.search.epochs = 100
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.seed}/{config.run_id}'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}'
+
+    config.evaluation.epochs = 100
+
     clear_output(wait=True)
+
     utils.log_args(config)
+    utils.create_exp_dir(config.save)
+    utils.create_exp_dir(config.save + "/search")
+    utils.create_exp_dir(config.save + "/eval")
+
     torch.manual_seed(config.search.seed)
 
     logger = setup_logger(config.save + '/log.log')
@@ -304,4 +312,4 @@ if __name__ == '__main__':
     trainer = Trainer(optimizer, config)
     trainer.search()
 
-    trainer.evaluate_oneshot()
+    trainer.evaluate(retrain=False)
