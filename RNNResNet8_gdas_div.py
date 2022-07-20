@@ -281,13 +281,13 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'darts'  # 'gdas', 'drnas'
+    config.optimizer = 'gdas'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100
     config.search.lr = 0.025
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_div'
 
     config.evaluation.epochs = 100
 

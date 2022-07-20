@@ -269,7 +269,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Add(),
                 Sub(),
                 Mul(),
-                Div(),
+                # Div(),
                 Maximum(),
                 Minimum(),
                 SigMul(),
@@ -281,7 +281,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'darts'  # 'gdas', 'drnas'
+    config.optimizer = 'gdas'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100

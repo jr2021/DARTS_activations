@@ -269,7 +269,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Add(),
                 Sub(),
                 Mul(),
-                Div(),
+                # Div(),
                 Maximum(),
                 Minimum(),
                 SigMul(),

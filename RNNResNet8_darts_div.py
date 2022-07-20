@@ -287,7 +287,7 @@ if __name__ == '__main__':
     config.search.epochs = 100
     config.search.lr = 0.025
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_div'
 
     config.evaluation.epochs = 100
 
