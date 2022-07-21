@@ -303,7 +303,7 @@ if __name__ == '__main__':
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
-    search_space = ActivationFuncResNet20SearchSpace()
+    search_space = ActivationFuncResNet20SearchSpace("huge")
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 
