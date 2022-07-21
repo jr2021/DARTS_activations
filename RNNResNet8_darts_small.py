@@ -269,7 +269,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Add(),
                 Sub(),
                 Mul(),
-                Div(),
+                # Div(),
                 Maximum(),
                 Minimum(),
                 SigMul(),
@@ -281,13 +281,13 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'gdas'  # 'gdas', 'drnas'
+    config.optimizer = 'darts'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100
     config.search.lr = 0.025
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_div'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_small'
 
     config.evaluation.epochs = 100
 
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
-    search_space = ActivationFuncResNet20SearchSpace("huge")
+    search_space = ActivationFuncResNet20SearchSpace("small")
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 

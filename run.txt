@@ -1,6 +1,6 @@
 python RNNResNet8_darts.py
-python RNNResNet8_darts_div.py
+python RNNResNet8_darts_small.py
 python RNNResNet8_drnas.py
-python RNNResNet8_drnas_div.py
+python RNNResNet8_drnas_small.py
 python RNNResNet8_gdas.py
-python RNNResNet8_gdas_div.py
+python RNNResNet8_gdas_small.py

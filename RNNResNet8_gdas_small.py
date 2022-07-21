@@ -2,7 +2,7 @@ import logging
 import networkx as nx
 import matplotlib.pyplot as plt
 from naslib.defaults.trainer import Trainer
-from naslib.optimizers import DARTSOptimizer
+from naslib.optimizers import OneShotNASOptimizer
 from naslib.utils import utils, setup_logger
 from naslib.search_spaces.core.graph import Graph, EdgeData
 from naslib.search_spaces.core import primitives as ops
@@ -269,7 +269,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Add(),
                 Sub(),
                 Mul(),
-                Div(),
+                # Div(),
                 Maximum(),
                 Minimum(),
                 SigMul(),
@@ -281,13 +281,13 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'drnas'  # 'gdas', 'drnas'
+    config.optimizer = 'oso'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100
     config.search.lr = 0.025
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_div'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_small'
 
     config.evaluation.epochs = 100
 
@@ -303,11 +303,11 @@ if __name__ == '__main__':
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
-    search_space = ActivationFuncResNet20SearchSpace("huge")
+    search_space = ActivationFuncResNet20SearchSpace("small")
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 
-    optimizer = DARTSOptimizer(config)
+    optimizer = OneShotNASOptimizer(config)
     optimizer.adapt_search_space(search_space)
     # with torch.autograd.set_detect_anomaly(True):
     trainer = Trainer(optimizer, config)

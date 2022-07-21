@@ -2,7 +2,7 @@ import logging
 import networkx as nx
 import matplotlib.pyplot as plt
 from naslib.defaults.trainer import Trainer
-from naslib.optimizers import DARTSOptimizer
+from naslib.optimizers import DrNASOptimizer
 from naslib.utils import utils, setup_logger
 from naslib.search_spaces.core.graph import Graph, EdgeData
 from naslib.search_spaces.core import primitives as ops
@@ -307,7 +307,7 @@ if __name__ == '__main__':
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 
-    optimizer = DARTSOptimizer(config)
+    optimizer = DrNASOptimizer(config)
     optimizer.adapt_search_space(search_space)
     # with torch.autograd.set_detect_anomaly(True):
     trainer = Trainer(optimizer, config)
