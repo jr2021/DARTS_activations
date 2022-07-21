@@ -330,3 +330,20 @@ class Beta(AbstractPrimitive):
 
     def get_embedded_ops(self):
         return None
+
+
+class Beta_GDAS(AbstractPrimitive):
+    def __init__(self, channels):
+        super().__init__(locals())
+        self.beta = torch.nn.Parameter(torch.ones((1, channels, 1, 1)))
+        # self.beta = torch.nn.Parameter(torch.ones(channels))
+
+    def forward(self, x, edge_data=None):
+        x = x.clamp(-10, 10)
+        result = self.beta.repeat(x.shape[0], 1, x.shape[2], x.shape[3])
+        # assert torch.sum(torch.isnan(result)) == 0
+        return result
+
+    def get_embedded_ops(self):
+        return None
+

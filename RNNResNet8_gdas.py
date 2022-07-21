@@ -2,7 +2,7 @@ import logging
 import networkx as nx
 import matplotlib.pyplot as plt
 from naslib.defaults.trainer import Trainer
-from naslib.optimizers import OneShotNASOptimizer
+from naslib.optimizers import GDASOptimizer
 from naslib.utils import utils, setup_logger
 from naslib.search_spaces.core.graph import Graph, EdgeData
 from naslib.search_spaces.core import primitives as ops
@@ -12,7 +12,7 @@ import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, \
     BetaMix, Stack
-from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
+from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta_GDAS, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
     Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
 import argparse
@@ -261,7 +261,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 LogExp(),
                 Exp2(),
                 Erf(),
-                Beta(channels=channels),
+                Beta_GDAS(channels=channels),
             ])
         # binary (4, 5), (9, 10)
         elif (edge.head, edge.tail) in {(4, 5), (9, 10)}:
@@ -307,7 +307,7 @@ if __name__ == '__main__':
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 
-    optimizer = OneShotNASOptimizer(config)
+    optimizer = GDASOptimizer(config)
     optimizer.adapt_search_space(search_space)
     # with torch.autograd.set_detect_anomaly(True):
     trainer = Trainer(optimizer, config)
