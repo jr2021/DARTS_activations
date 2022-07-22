@@ -113,7 +113,7 @@ if __name__ == '__main__':
                'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
     # net = ResNet20()
-    net = ResNet20(ac_func=DartsFunc_1, requires_channels=True)
+    net = ResNet20(ac_func=DartsFunc_1, requires_channels=True).to("cuda:0")
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -124,6 +124,8 @@ if __name__ == '__main__':
         for i, data in enumerate(trainloader, 0):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data
+            inputs = inputs.to("cuda:0")
+            labels = labels.to("cuda:0")
 
             # zero the parameter gradients
             optimizer.zero_grad()
