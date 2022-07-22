@@ -3,6 +3,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.optim as optim
+from activation_sub_func.experimental_func import DartsFunc_1
 
 """
 "in_channels": 16,
@@ -13,36 +14,46 @@ import torch.optim as optim
 
 
 class BasicBlock(nn.Module):
-    def __init__(self, channels, ac_func):
+    def __init__(self, channels, ac_func, requires_channels: bool = False):
         super().__init__()
+
+        args = dict()
+        if requires_channels:
+            args["channels"] = channels
+
         self.model = nn.Sequential(
             nn.Conv2d(kernel_size=3, in_channels=channels, out_channels=channels, padding=1),
             nn.BatchNorm2d(channels),
-            ac_func(),
+            ac_func(**args),
             nn.Conv2d(kernel_size=3, in_channels=channels, out_channels=channels, padding=1),
             nn.BatchNorm2d(channels),
         )
 
-        self.final_ac = ac_func()
+        self.final_ac = ac_func(**args)
 
     def forward(self, x):
         return self.final_ac(x + self.model(x))
 
 
 class ReductionBasicBlock(nn.Module):
-    def __init__(self, channels_in, channels_out, ac_func):
+    def __init__(self, channels_in, channels_out, ac_func, requires_channels: bool = False):
         super().__init__()
+
+        args = dict()
+        if requires_channels:
+            args["channels"] = channels_out
+
         self.model = nn.Sequential(
             nn.Conv2d(kernel_size=3, in_channels=channels_in, out_channels=channels_out, stride=2, padding=1),
             nn.BatchNorm2d(channels_out),
-            ac_func(),
+            ac_func(**args),
             nn.Conv2d(kernel_size=3, in_channels=channels_out, out_channels=channels_out, stride=1, padding=1),
             nn.BatchNorm2d(channels_out),
         )
 
         self.reduction_conv = nn.Conv2d(kernel_size=1, in_channels=channels_in, out_channels=channels_out, stride=2,
                                         padding=0)
-        self.final_ac = ac_func()
+        self.final_ac = ac_func(**args)
 
     def forward(self, x):
         res = self.final_ac(self.reduction_conv(x) + self.model(x))
@@ -50,21 +61,25 @@ class ReductionBasicBlock(nn.Module):
 
 
 class ResNet20(nn.Module):
-    def __init__(self, ac_func=nn.ReLU):
+    def __init__(self, ac_func=nn.ReLU, requires_channels: bool = False):
         super().__init__()
+
+        args = dict()
+        if requires_channels:
+            args["channels"] = 16
 
         self.model = nn.Sequential(
             nn.Conv2d(kernel_size=3, in_channels=3, out_channels=16, padding=1),
-            ac_func(),
-            BasicBlock(channels=16, ac_func=ac_func),
-            BasicBlock(channels=16, ac_func=ac_func),
-            BasicBlock(channels=16, ac_func=ac_func),
-            ReductionBasicBlock(channels_in=16, channels_out=32, ac_func=ac_func),
-            BasicBlock(channels=32, ac_func=ac_func),
-            BasicBlock(channels=32, ac_func=ac_func),
-            ReductionBasicBlock(channels_in=32, channels_out=64, ac_func=ac_func),
-            BasicBlock(channels=64, ac_func=ac_func),
-            BasicBlock(channels=64, ac_func=ac_func),
+            ac_func(**args),
+            BasicBlock(channels=16, ac_func=ac_func, requires_channels=requires_channels),
+            BasicBlock(channels=16, ac_func=ac_func, requires_channels=requires_channels),
+            BasicBlock(channels=16, ac_func=ac_func, requires_channels=requires_channels),
+            ReductionBasicBlock(channels_in=16, channels_out=32, ac_func=ac_func, requires_channels=requires_channels),
+            BasicBlock(channels=32, ac_func=ac_func, requires_channels=requires_channels),
+            BasicBlock(channels=32, ac_func=ac_func, requires_channels=requires_channels),
+            ReductionBasicBlock(channels_in=32, channels_out=64, ac_func=ac_func, requires_channels=requires_channels),
+            BasicBlock(channels=64, ac_func=ac_func, requires_channels=requires_channels),
+            BasicBlock(channels=64, ac_func=ac_func, requires_channels=requires_channels),
             nn.Sequential(
                 nn.AvgPool2d(8),
                 nn.Flatten(),
@@ -97,13 +112,14 @@ if __name__ == '__main__':
     classes = ('plane', 'car', 'bird', 'cat',
                'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-    net = ResNet20()
+    # net = ResNet20()
+    net = ResNet20(ac_func=DartsFunc_1, requires_channels=True)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
     for epoch in range(2):  # loop over the dataset multiple times
-
+        print(f"epoch: {epoch+1}")
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             # get the inputs; data is a list of [inputs, labels]
@@ -120,7 +136,7 @@ if __name__ == '__main__':
 
             # print statistics
             running_loss += loss.item()
-            if i % 2000 == 1999:  # print every 2000 mini-batches
+            if i % 2000 == 0:  # print every 2000 mini-batches
                 print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
                 running_loss = 0.0
 
