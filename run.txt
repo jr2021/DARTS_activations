@@ -1,6 +1,8 @@
-python RNNResNet8_darts.py
-python RNNResNet8_darts_small.py
-python RNNResNet8_drnas.py
-python RNNResNet8_drnas_small.py
-python RNNResNet8_gdas.py
-python RNNResNet8_gdas_small.py
+python run_eval.py --network ResNet20 --ac_func 0
+python run_eval.py --network ResNet20 --ac_func 1
+python run_eval.py --network ResNet20 --ac_func 2
+python run_eval.py --network ResNet20 --ac_func 3
+python run_eval.py --network ResNet8 --ac_func 0
+python run_eval.py --network ResNet8 --ac_func 1
+python run_eval.py --network ResNet8 --ac_func 2
+python run_eval.py --network ResNet8 --ac_func 3
