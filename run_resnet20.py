@@ -11,7 +11,7 @@ import torchvision.transforms as transforms
 import torch.optim as optim
 
 from ResNet20 import ResNet20
-from activation_sub_func.experimental_func import DartsFunc_1
+from activation_sub_func.experimental_func import DartsFunc_complex
 from naslib.utils import utils
 
 train_size = 0.25
@@ -75,7 +75,7 @@ classes = ('plane', 'car', 'bird', 'cat',
            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 # net = ResNet20()
-net = ResNet20(ac_func=DartsFunc_1, requires_channels=True).to("cuda:0")
+net = ResNet20(ac_func=DartsFunc_complex, requires_channels=True).to("cuda:0")
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)

@@ -60,7 +60,7 @@ class ReductionBasicBlock(nn.Module):
         return res
 
 
-class ResNet20(nn.Module):
+class ResNet8(nn.Module):
     def __init__(self, ac_func=nn.ReLU, requires_channels: bool = False):
         super().__init__()
 
@@ -73,12 +73,6 @@ class ResNet20(nn.Module):
             ac_func(**args),
             BasicBlock(channels=16, ac_func=ac_func, requires_channels=requires_channels),
             BasicBlock(channels=16, ac_func=ac_func, requires_channels=requires_channels),
-            ReductionBasicBlock(channels_in=16, channels_out=32, ac_func=ac_func, requires_channels=requires_channels),
-            BasicBlock(channels=32, ac_func=ac_func, requires_channels=requires_channels),
-            BasicBlock(channels=32, ac_func=ac_func, requires_channels=requires_channels),
-            ReductionBasicBlock(channels_in=32, channels_out=64, ac_func=ac_func, requires_channels=requires_channels),
-            BasicBlock(channels=64, ac_func=ac_func, requires_channels=requires_channels),
-            BasicBlock(channels=64, ac_func=ac_func, requires_channels=requires_channels),
             nn.Sequential(
                 nn.AvgPool2d(8),
                 nn.Flatten(),
@@ -111,11 +105,11 @@ if __name__ == '__main__':
     classes = ('plane', 'car', 'bird', 'cat',
                'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-    # net = ResNet20()
-    # net = ResNet20(ac_func=DartsFunc_complex, requires_channels=True).to("cuda:0")
-    # net = ResNet20(ac_func=DartsFunc_simple, requires_channels=True).to("cuda:0")
-    # net = ResNet20(ac_func=nn.ReLU, requires_channels=False).to("cuda:0")
-    net = ResNet20(ac_func=nn.SiLU, requires_channels=False).to("cuda:0")
+    # net = ResNet8()
+    # net = ResNet8(ac_func=DartsFunc_complex, requires_channels=True).to("cuda:0")
+    # net = ResNet8(ac_func=DartsFunc_simple, requires_channels=True).to("cuda:0")
+    # net = ResNet8(ac_func=nn.ReLU, requires_channels=False).to("cuda:0")
+    net = ResNet8(ac_func=nn.SiLU, requires_channels=False).to("cuda:0")
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.025, momentum=0.9)
