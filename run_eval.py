@@ -39,7 +39,7 @@ if __name__ == '__main__':
     batch_size = args.batch_size
     seed = args.seed
     epochs = 100
-    save_path = f"{args.save_path}_{args.network}_{args.ac_func}"
+    save_path = f"{args.save_path}_{args.network}_{args.ac_func}_{seed}"
     Path(save_path).mkdir(parents=True, exist_ok=True)
 
     np.random.seed(seed)
@@ -69,7 +69,8 @@ if __name__ == '__main__':
                    'test_acc_5': [],
                    'test_loss': [],
                    'runtime': [],
-                   'train_time': []}
+                   'train_time': [],
+                   'seed': [seed]}
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True, transform=transform)
