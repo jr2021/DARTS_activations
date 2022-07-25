@@ -17,6 +17,7 @@ import torch.optim as optim
 
 from naslib.utils import utils
 from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple
+from pathlib import Path
 
 
 parser = argparse.ArgumentParser()
@@ -39,6 +40,7 @@ if __name__ == '__main__':
     seed = args.seed
     epochs = 100
     save_path = f"{args.save_path}_{args.network}_{args.ac_func}"
+    Path(save_path).mkdir(parents=True, exist_ok=True)
 
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -174,12 +176,12 @@ if __name__ == '__main__':
                 running_loss = 0.0
 
         end_time = time.time()
-        errors_dict["train_acc_1"].append(train_top5.avg)
-        errors_dict["train_acc_5"].append(train_top1.avg)
-        errors_dict["train_loss"].append(train_loss.avg)
-        errors_dict["valid_acc_1"].append(val_top1.avg)
-        errors_dict["valid_acc_5"].append(val_top5.avg)
-        errors_dict["valid_loss"].append(val_loss.avg)
+        errors_dict["train_acc_1"].append(float(train_top5.avg))
+        errors_dict["train_acc_5"].append(float(train_top1.avg))
+        errors_dict["train_loss"].append(float(train_loss.avg))
+        errors_dict["valid_acc_1"].append(float(val_top1.avg))
+        errors_dict["valid_acc_5"].append(float(val_top5.avg))
+        errors_dict["valid_loss"].append(float(val_loss.avg))
         errors_dict["runtime"].append(end_time - start_time)
 
         print("Epoch {} done. Train accuracy (top1, top5): {:.5f}, {:.5f}, Validation accuracy: {:.5f}, {:.5f}".format(
@@ -191,10 +193,11 @@ if __name__ == '__main__':
         val_top1.reset()
         val_top5.reset()
         val_loss.reset()
-        with codecs.open(os.path.join(save_path, 'errors.json'), 'w', encoding='utf-8') as file:
-            json.dump(errors_dict, file, separators=(',', ':'))
 
-        torch.save(net.state_dict(), os.join(save_path, "model.pth"))
+        with codecs.open(os.path.join(save_path, 'errors.json'), 'w', encoding='utf-8') as file:
+            json.dump(errors_dict, file, separators=(',', ':'), indent=4)
+
+        torch.save(net.state_dict(), f"{save_path}/model.pth")
 
     print('Finished Training')
 
@@ -214,14 +217,14 @@ if __name__ == '__main__':
         test_top5.update(prec5)
         test_loss.update(float(loss.detach().cpu()))
 
-    errors_dict["test_acc_1"].append(test_top5.avg)
-    errors_dict["test_acc_5"].append(test_top1.avg)
-    errors_dict["test_loss"].append(test_loss.avg)
+    errors_dict["test_acc_1"].append(float(test_top5.avg))
+    errors_dict["test_acc_5"].append(float(test_top1.avg))
+    errors_dict["test_loss"].append(float(test_loss.avg))
 
     print(
         "Test loss:{:.5f}, Test Accuracy (top1, top5): {:.5f}, {:.5f} ".format(test_loss.avg, test_top1.avg, test_top5))
 
     with codecs.open(os.path.join(save_path, 'errors.json'), 'w', encoding='utf-8') as file:
-        json.dump(errors_dict, file, separators=(',', ':'))
+        json.dump(errors_dict, file, separators=(',', ':'), indent=4)
 
     print("Finished")

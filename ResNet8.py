@@ -76,7 +76,7 @@ class ResNet8(nn.Module):
             nn.Sequential(
                 nn.AvgPool2d(8),
                 nn.Flatten(),
-                nn.Linear(64, 10),
+                nn.Linear(256, 10),
                 nn.Softmax()
             )
         )
