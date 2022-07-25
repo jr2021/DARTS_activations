@@ -166,7 +166,7 @@ if __name__ == '__main__':
             prec1, prec5 = utils.accuracy(outputs, labels, topk=(1, 5))
             val_top1.update(prec1)
             val_top5.update(prec5)
-            val_loss.update(float(loss.detach.cpu()))
+            val_loss.update(float(loss.detach().cpu()))
 
             running_loss += loss.item()
             if i % 200 == 199:  # print every 2000 mini-batches
