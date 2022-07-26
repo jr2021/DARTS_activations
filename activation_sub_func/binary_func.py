@@ -124,7 +124,7 @@ class ExpBetaSubAbs(AbstractPrimitive):
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
         result = torch.exp(-self.beta * torch.abs(torch.sub(x[0], x[1])))
-        # assert torch.sum(torch.isinf(result)) == 0
+        assert torch.sum(torch.isinf(result)) == 0
         return result
 
     def get_embedded_ops(self):

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from activation_sub_func.unary_func import Power, Log, Sinc, Exp2, Asinh, Beta_add, Maximum0, Erf
+from activation_sub_func.unary_func import Power, Log, Sinc, Exp2, Asinh, Beta_add, Maximum0, Erf, Sigmoid, Tanh
 from activation_sub_func.binary_func import Mul, BetaMix, Stack, ExpBetaSubAbs
 
 
@@ -62,7 +62,7 @@ class GDAS_simple(nn.Module):
 class GDAS_complex(nn.Module):
     def __init__(self, channels: int) -> None:
         super().__init__()
-        self.unary_1 = Erf()
+        self.unary_1 = Erf()  # Erf error Tanh almost equal
         self.unary_2 = Beta_add(channels)
         self.unary_3 = Maximum0()
         self.unary_4 = Power(2)
@@ -70,6 +70,8 @@ class GDAS_complex(nn.Module):
         self.binary_2 = ExpBetaSubAbs(channels)
 
     def forward(self, input: Tensor) -> Tensor:
+        assert torch.sum(torch.isinf(input)) == 0
+        assert torch.sum(torch.isinf(input)) == 0
         x_1 = self.unary_1(input)
         x_2 = self.unary_2(input)
         x_3 = self.unary_3(input)

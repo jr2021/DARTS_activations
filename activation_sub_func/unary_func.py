@@ -183,7 +183,7 @@ class Tanh(AbstractPrimitive):
     def forward(self, x, edge_data=None):
         x = x.clamp(-10, 10)
         result = torch.tanh(x)
-        # assert torch.sum(torch.isnan(result)) == 0
+        assert torch.sum(torch.isnan(result)) == 0
         return result
 
     def get_embedded_ops(self):
@@ -350,4 +350,3 @@ class Beta_GDAS(AbstractPrimitive):
 
     def get_embedded_ops(self):
         return None
-
