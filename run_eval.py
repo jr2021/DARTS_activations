@@ -31,6 +31,8 @@ parser.add_argument('--save_path', type=str, default="eval")
 # 1: Darts_complex
 # 2: ReLU
 # 3: SiLU
+# 4: GDAS_simple
+# 5: GDAS_complex
 
 args = parser.parse_args()
 

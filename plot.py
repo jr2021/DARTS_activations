@@ -15,6 +15,10 @@ def replace_id(x):
         return "DartsSimple"
     elif x == "eval_ResNet8_1":
         return "DartsComplex"
+    elif x == "eval_ResNet8_4":
+        return "GDASSimple"
+    elif x == "eval_ResNet8_5":
+        return "GDASComplex"
     elif x == "eval_ResNet20_2":
         return "ReLU"
     elif x == "eval_ResNet20_3":
@@ -23,6 +27,10 @@ def replace_id(x):
         return "DartsSimple"
     elif x == "eval_ResNet20_1":
         return "DartsComplex"
+    elif x == "eval_ResNet20_4":
+        return "GDASSimple"
+    elif x == "eval_ResNet20_5":
+        return "GDASComplex"
 
 
 labels = ["DartsSimple", "DartsComplex", "ReLU", "Swish"]
