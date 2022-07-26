@@ -16,9 +16,9 @@ import torchvision.transforms as transforms
 import torch.optim as optim
 
 from naslib.utils import utils
-from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple
+from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple, DartsFunc_complex_r, \
+    DartsFunc_simple_r
 from pathlib import Path
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--network', type=str, default="ResNet20")
@@ -117,6 +117,10 @@ if __name__ == '__main__':
             net = ResNet8(ac_func=nn.ReLU, requires_channels=False).to("cuda:0")
         elif args.ac_func == 3:
             net = ResNet8(ac_func=nn.SiLU, requires_channels=False).to("cuda:0")
+        elif args.ac_func == 4:
+            net = ResNet8(ac_func=DartsFunc_simple_r, requires_channels=True).to("cuda:0")
+        elif args.ac_func == 5:
+            net = ResNet8(ac_func=DartsFunc_complex_r, requires_channels=True).to("cuda:0")
         else:
             raise KeyError(f"{args.ac_func} is no valid value for --ac_func")
     else:
