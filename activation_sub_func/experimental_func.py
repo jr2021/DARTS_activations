@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from activation_sub_func.unary_func import Power, Log, Sinc, Exp2, Asinh, Beta_add, Maximum0
+from activation_sub_func.unary_func import Power, Log, Sinc, Exp2, Asinh, Beta_add, Maximum0, Erf
 from activation_sub_func.binary_func import Mul, BetaMix, Stack, ExpBetaSubAbs
 
 
@@ -15,7 +15,7 @@ class DartsFunc_simple(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         x_1 = self.unary_1(input)
         x_2 = self.unary_2(input)
-        x_prim = torch.stack([x_1, x_2], dim=0)
+        x_prim = torch.stack([x_1, x_2])
         x_prim.clamp(-10, 10)
         return self.binary_1(x_prim)
 
@@ -33,12 +33,15 @@ class DartsFunc_complex(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         x_1 = self.unary_1(input)
         x_2 = self.unary_2(input)
-        x_prim = torch.stack([x_1, x_2], dim=0)
-        x_prim.clamp(-10, 10)
-        x_3 = self.binary_3(x_prim)
-        res = torch.stack([x_prim, x_3], dim=0)
+        x_3 = self.unary_3(input)
+
+        x_prime = torch.stack([x_1, x_2])
+        x_prime.clamp(-10, 10)
+        x_prime = self.binary_1(x_prime)
+
+        res = torch.stack([x_prime, x_3])
         res.clamp(-10, 10)
-        return self.binary_2(res)
+        return self.unary_4(self.binary_2(res))
 
 
 class GDAS_simple(nn.Module):
@@ -51,7 +54,7 @@ class GDAS_simple(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         x_1 = self.unary_1(input)
         x_2 = self.unary_2(input)
-        x_prim = torch.stack([x_1, x_2], dim=0)
+        x_prim = torch.stack([x_1, x_2])
         x_prim.clamp(-10, 10)
         return self.binary_1(x_prim)
 
@@ -59,7 +62,7 @@ class GDAS_simple(nn.Module):
 class GDAS_complex(nn.Module):
     def __init__(self, channels: int) -> None:
         super().__init__()
-        self.unary_1 = Asinh()
+        self.unary_1 = Erf()
         self.unary_2 = Beta_add(channels)
         self.unary_3 = Maximum0()
         self.unary_4 = Power(2)
@@ -69,9 +72,12 @@ class GDAS_complex(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         x_1 = self.unary_1(input)
         x_2 = self.unary_2(input)
-        x_prim = torch.stack([x_1, x_2], dim=0)
-        x_prim.clamp(-10, 10)
-        x_3 = self.binary_3(x_prim)
-        res = torch.stack([x_prim, x_3], dim=0)
+        x_3 = self.unary_3(input)
+
+        x_prime = torch.stack([x_1, x_2])
+        x_prime.clamp(-10, 10)
+        x_prime = self.binary_1(x_prime)
+
+        res = torch.stack([x_prime, x_3])
         res.clamp(-10, 10)
-        return self.binary_2(res)
+        return self.unary_4(self.binary_2(res))
