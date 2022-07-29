@@ -10,11 +10,11 @@ from torch import nn
 from IPython.display import clear_output
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
-from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, \
+from activation_sub_func.binary_func_nc import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, \
     BetaMix, Stack
-from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta_GDAS, Beta_mul, Beta_add, Log, Exp, \
+from activation_sub_func.unary_func_nc import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
-    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
+    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt, Beta_GDAS
 import argparse
 import time
 
@@ -78,7 +78,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(2)  # intermediate
         self.add_node(3,
                       subgraph=activation_cell.copy().set_scope("activation_1").set_input([2]))  # activation cell 3
-        #self.nodes[3]['subgraph'].name = "activation_1"
+        # self.nodes[3]['subgraph'].name = "activation_1"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{1}",
@@ -87,7 +87,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(4)
         self.add_node(5,
                       subgraph=activation_cell.copy().set_scope("activation_2").set_input([4]))  # activation cell 3
-        #self.nodes[5]['subgraph'].name = "activation_2"
+        # self.nodes[5]['subgraph'].name = "activation_2"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{2}",
@@ -96,7 +96,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(6)
         self.add_node(7,
                       subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
-        #self.nodes[7]['subgraph'].name = "activation_3"
+        # self.nodes[7]['subgraph'].name = "activation_3"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{3}",
@@ -154,7 +154,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-        #self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage}",
@@ -164,7 +164,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -192,7 +192,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-       # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_a["out_channels"]),
             scope=f"activation_{stage}",
@@ -202,7 +202,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_b["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -238,8 +238,8 @@ class ActivationFuncResNet20SearchSpace(Graph):
             edge.data.set("op", [
                 ops.Identity(),
                 ops.Zero(stride=1),
-                Power(2),
-                Power(3),
+                # Power(2),
+                # Power(3),
                 Sqrt(),
                 Sin(),
                 Cos(),
@@ -248,9 +248,9 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Beta_mul(channels=channels),
                 Beta_add(channels=channels),
                 Log(),
-                Exp(),
-                Sinh(),
-                Cosh(),
+                # Exp(),
+                # Sinh(),
+                # Cosh(),
                 Tanh(),
                 Asinh(),
                 Atan(),
@@ -258,9 +258,9 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Maximum0(),
                 Minimum0(),
                 Sigmoid(),
-                LogExp(),
-                Exp2(),
-                Erf(),
+                # LogExp(),
+                # Exp2(),
+                # Erf(),
                 Beta_GDAS(channels=channels),
             ])
         # binary (4, 5), (9, 10)
@@ -273,21 +273,21 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Maximum(),
                 Minimum(),
                 SigMul(),
-                ExpBetaSub2(channels=channels),
-                ExpBetaSubAbs(channels=channels),
+                # ExpBetaSub2(channels=channels),
+                # ExpBetaSubAbs(channels=channels),
                 BetaMix(channels=channels),
             ])
 
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'oso'  # 'gdas', 'drnas'
+    config.optimizer = 'gdas'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100
     config.search.lr = 0.025
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_small'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_restricted'
 
     config.evaluation.epochs = 100
 
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
-    search_space = ActivationFuncResNet20SearchSpace("small")
+    search_space = ActivationFuncResNet20SearchSpace("huge")
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 

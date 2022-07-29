@@ -2,7 +2,7 @@ import logging
 import networkx as nx
 import matplotlib.pyplot as plt
 from naslib.defaults.trainer import Trainer
-from naslib.optimizers import DARTSOptimizer
+from naslib.optimizers import DrNASOptimizer
 from naslib.utils import utils, setup_logger
 from naslib.search_spaces.core.graph import Graph, EdgeData
 from naslib.search_spaces.core import primitives as ops
@@ -10,9 +10,9 @@ from torch import nn
 from IPython.display import clear_output
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
-from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, \
+from activation_sub_func.binary_func_nc import Maximum, Minimum, Sub, Add, Mul, Div, SigMul, ExpBetaSub2, ExpBetaSubAbs, \
     BetaMix, Stack
-from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
+from activation_sub_func.unary_func_nc import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
     Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
 import argparse
@@ -238,8 +238,8 @@ class ActivationFuncResNet20SearchSpace(Graph):
             edge.data.set("op", [
                 ops.Identity(),
                 ops.Zero(stride=1),
-                Power(2),
-                Power(3),
+                #Power(2),
+                #Power(3),
                 Sqrt(),
                 Sin(),
                 Cos(),
@@ -248,9 +248,9 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Beta_mul(channels=channels),
                 Beta_add(channels=channels),
                 Log(),
-                Exp(),
-                Sinh(),
-                Cosh(),
+                #Exp(),
+                #Sinh(),
+                #Cosh(),
                 Tanh(),
                 Asinh(),
                 Atan(),
@@ -258,9 +258,9 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Maximum0(),
                 Minimum0(),
                 Sigmoid(),
-                LogExp(),
-                Exp2(),
-                Erf(),
+                #LogExp(),
+                #Exp2(),
+                #Erf(),
                 Beta(channels=channels),
             ])
         # binary (4, 5), (9, 10)
@@ -273,21 +273,21 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Maximum(),
                 Minimum(),
                 SigMul(),
-                ExpBetaSub2(channels=channels),
-                ExpBetaSubAbs(channels=channels),
+                #ExpBetaSub2(channels=channels),
+                #ExpBetaSubAbs(channels=channels),
                 BetaMix(channels=channels),
             ])
 
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'darts'  # 'gdas', 'drnas'
+    config.optimizer = 'drnas'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100
     config.search.lr = 0.025
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_restricted'
 
     config.evaluation.epochs = 100
 
@@ -307,7 +307,7 @@ if __name__ == '__main__':
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 
-    optimizer = DARTSOptimizer(config)
+    optimizer = DrNASOptimizer(config)
     optimizer.adapt_search_space(search_space)
     # with torch.autograd.set_detect_anomaly(True):
     trainer = Trainer(optimizer, config)
