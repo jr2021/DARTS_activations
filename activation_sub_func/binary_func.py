@@ -151,7 +151,7 @@ class Stack():
         pass
 
     def __call__(self, tensors, edges_data=None):
-        tensors = tensors.clamp(-10, 10)
+        # tensors = tensors.clamp(-10, 10)
         result = torch.stack(tensors)
         # assert torch.sum(torch.isinf(result)) == 0
         return result

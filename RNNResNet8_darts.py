@@ -78,7 +78,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(2)  # intermediate
         self.add_node(3,
                       subgraph=activation_cell.copy().set_scope("activation_1").set_input([2]))  # activation cell 3
-        #self.nodes[3]['subgraph'].name = "activation_1"
+        # self.nodes[3]['subgraph'].name = "activation_1"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{1}",
@@ -87,7 +87,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(4)
         self.add_node(5,
                       subgraph=activation_cell.copy().set_scope("activation_2").set_input([4]))  # activation cell 3
-        #self.nodes[5]['subgraph'].name = "activation_2"
+        # self.nodes[5]['subgraph'].name = "activation_2"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{2}",
@@ -96,7 +96,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(6)
         self.add_node(7,
                       subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
-        #self.nodes[7]['subgraph'].name = "activation_3"
+        # self.nodes[7]['subgraph'].name = "activation_3"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{3}",
@@ -154,7 +154,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-        #self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage}",
@@ -164,7 +164,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -181,18 +181,20 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.edges[start, start + 1].set('op',
                                          ops.Sequential(
                                              nn.Conv2d(**conv_option),
-                                             nn.BatchNorm2d(conv_option["out_channels"]), ))  # convolutional edge
+                                             # nn.BatchNorm2d(conv_option["out_channels"]),
+                                         ))  # convolutional edge
         self.edges[start + 2, start + 3].set('op',
                                              ops.Sequential(
                                                  nn.Conv2d(**conv_option),
-                                                 nn.BatchNorm2d(conv_option["out_channels"]), ))  # convolutional edge
+                                                 # nn.BatchNorm2d(conv_option["out_channels"])
+                                             ))  # convolutional edge
 
     def _create_reduction_block(self, start: int, stage: int, cell, conv_option_a: dict, conv_option_b: dict):
         self.add_node(start + 1)
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-       # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_a["out_channels"]),
             scope=f"activation_{stage}",
@@ -202,7 +204,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_b["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -219,63 +221,66 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.edges[start, start + 1].set('op',
                                          ops.Sequential(
                                              nn.Conv2d(**conv_option_a),
-                                             nn.BatchNorm2d(conv_option_a["out_channels"])))  # convolutional edge
+                                             # nn.BatchNorm2d(conv_option_a["out_channels"])
+                                         ))  # convolutional edge
         conv_option_a["in_channels"] = conv_option_a["out_channels"]
         conv_option_a["stride"] = 1
 
         self.edges[start, start + 3].set('op',
                                          ops.Sequential(
                                              nn.Conv2d(**conv_option_b),
-                                             nn.BatchNorm2d(conv_option_b["out_channels"]), ))  # convolutional edge
+                                             # nn.BatchNorm2d(conv_option_b["out_channels"])
+                                         ))  # convolutional edge
         self.edges[start + 2, start + 3].set('op',
                                              ops.Sequential(
                                                  nn.Conv2d(**conv_option_a),
-                                                 nn.BatchNorm2d(conv_option_a["out_channels"]), ))  # convolutional edge
+                                                 # nn.BatchNorm2d(conv_option_a["out_channels"])
+                                             ))  # convolutional edge
 
     def _set_ops(self, edge, channels=32):
         # unary (1, 2), (1, 3), (1, 8), (6, 7)
         if (edge.head, edge.tail) in {(1, 2), (1, 3), (1, 8), (6, 7)}:
             edge.data.set("op", [
-                ops.Identity(),
-                ops.Zero(stride=1),
-                Power(2),
-                Power(3),
-                Sqrt(),
-                Sin(),
-                Cos(),
-                Abs_op(),
-                Sign(),
-                Beta_mul(channels=channels),
-                Beta_add(channels=channels),
-                Log(),
-                Exp(),
-                Sinh(),
-                Cosh(),
-                Tanh(),
-                Asinh(),
-                Atan(),
-                Sinc(),
-                Maximum0(),
-                Minimum0(),
-                Sigmoid(),
-                LogExp(),
-                Exp2(),
-                Erf(),
-                Beta(channels=channels),
+                # ops.Sequential(ops.Identity(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(ops.Zero(stride=1), nn.BatchNorm2d(channels)),
+                ops.Sequential(Power(2), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Power(3), nn.BatchNorm2d(channels)),
+                ops.Sequential(Sqrt(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Sin(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Cos(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Abs_op(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Sign(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Beta_mul(channels=channels), nn.BatchNorm2d(channels)),
+                ops.Sequential(Beta_add(channels=channels), nn.BatchNorm2d(channels)),
+                ops.Sequential(Log(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Exp(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Sinh(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Cosh(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Tanh(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Asinh(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Atan(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Sinc(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Maximum0(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Minimum0(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Sigmoid(), nn.BatchNorm2d(channels)),
+                ops.Sequential(LogExp(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Exp2(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Erf(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Beta(channels=channels), nn.BatchNorm2d(channels))
             ])
         # binary (4, 5), (9, 10)
         elif (edge.head, edge.tail) in {(4, 5), (9, 10)}:
             edge.data.set("op", [
-                Add(),
-                Sub(),
-                Mul(),
+                ops.Sequential(Add(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Sub(), nn.BatchNorm2d(channels)),
+                ops.Sequential(Mul(), nn.BatchNorm2d(channels)),
                 # Div(),
-                Maximum(),
-                Minimum(),
-                SigMul(),
-                ExpBetaSub2(channels=channels),
-                ExpBetaSubAbs(channels=channels),
-                BetaMix(channels=channels),
+                ops.Sequential(Maximum(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(Minimum(), nn.BatchNorm2d(channels)),
+                ops.Sequential(SigMul(), nn.BatchNorm2d(channels)),
+                # ops.Sequential(ExpBetaSub2(channels=channels), nn.BatchNorm2d(channels)),
+                ops.Sequential(ExpBetaSubAbs(channels=channels), nn.BatchNorm2d(channels)),
+                ops.Sequential(BetaMix(channels=channels), nn.BatchNorm2d(channels)),
             ])
 
 
@@ -286,7 +291,7 @@ if __name__ == '__main__':
     config.search.batch_size = 32
     config.search.epochs = 100
     config.search.lr = 0.025
-    config.search.grad_clip = True
+    config.search.grad_clip = 2
     config.run_id = time.time()
     config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}'
 
@@ -305,6 +310,8 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     search_space = ActivationFuncResNet20SearchSpace("huge")
+    for p in search_space.parameters():
+        p.register_hook(lambda grad: torch.clamp(grad, -2, 2))
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 
