@@ -16,7 +16,7 @@ import torchvision.transforms as transforms
 import torch.optim as optim
 
 from naslib.utils import utils
-from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple, GDAS_simple, GDAS_complex
+from activation_sub_func.experimental_func_r import *
 from pathlib import Path
 
 
@@ -27,12 +27,13 @@ parser.add_argument('--seed', type=int, default=42)
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--train_size', type=float, default=0.8)
 parser.add_argument('--save_path', type=str, default="eval")
-# 0: Darts_simple
-# 1: Darts_complex
+# 0: Darts_simple_r
+# 1: Darts_complex_r
 # 2: ReLU
 # 3: SiLU
-# 4: GDAS_simple
-# 5: GDAS_complex
+# 4: DrNas_simple_r
+# 5: DrNas_complex_r
+# 6: Gdas_simple_r
 
 args = parser.parse_args()
 
@@ -101,32 +102,36 @@ if __name__ == '__main__':
 
     if args.network == "ResNet20":
         if args.ac_func == 0:
-            net = ResNet20(ac_func=DartsFunc_simple, requires_channels=True).to("cuda:0")
+            net = ResNet20(ac_func=DartsFunc_simple_r, requires_channels=True).to("cuda:0")
         elif args.ac_func == 1:
-            net = ResNet20(ac_func=DartsFunc_complex, requires_channels=True).to("cuda:0")
+            net = ResNet20(ac_func=DartsFunc_complex_r, requires_channels=True).to("cuda:0")
         elif args.ac_func == 2:
             net = ResNet20(ac_func=nn.ReLU, requires_channels=False).to("cuda:0")
         elif args.ac_func == 3:
             net = ResNet20(ac_func=nn.SiLU, requires_channels=False).to("cuda:0")
         elif args.ac_func == 4:
-            net = ResNet20(ac_func=GDAS_simple, requires_channels=True).to("cuda:0")
+            net = ResNet20(ac_func=DrNasFunc_simple_r, requires_channels=True).to("cuda:0")
         elif args.ac_func == 5:
-            net = ResNet20(ac_func=GDAS_complex, requires_channels=True).to("cuda:0")
+            net = ResNet20(ac_func=DrNasFunc_complex_r, requires_channels=True).to("cuda:0")
+        elif args.ac_func == 6:
+            net = ResNet20(ac_func=GdasFunc_simple_r, requires_channels=True).to("cuda:0")
         else:
             raise KeyError(f"{args.ac_func} is no valid value for --ac_func")
     elif args.network == "ResNet8":
         if args.ac_func == 0:
-            net = ResNet8(ac_func=DartsFunc_simple, requires_channels=True).to("cuda:0")
+            net = ResNet8(ac_func=DartsFunc_simple_r, requires_channels=True).to("cuda:0")
         elif args.ac_func == 1:
-            net = ResNet8(ac_func=DartsFunc_complex, requires_channels=True).to("cuda:0")
+            net = ResNet8(ac_func=DartsFunc_complex_r, requires_channels=True).to("cuda:0")
         elif args.ac_func == 2:
             net = ResNet8(ac_func=nn.ReLU, requires_channels=False).to("cuda:0")
         elif args.ac_func == 3:
             net = ResNet8(ac_func=nn.SiLU, requires_channels=False).to("cuda:0")
         elif args.ac_func == 4:
-            net = ResNet8(ac_func=GDAS_simple, requires_channels=True).to("cuda:0")
+            net = ResNet8(ac_func=DrNasFunc_simple_r, requires_channels=True).to("cuda:0")
         elif args.ac_func == 5:
-            net = ResNet8(ac_func=GDAS_complex, requires_channels=True).to("cuda:0")
+            net = ResNet8(ac_func=DrNasFunc_complex_r, requires_channels=True).to("cuda:0")
+        elif args.ac_func == 6:
+            net = ResNet8(ac_func=GdasFunc_simple_r, requires_channels=True).to("cuda:0")
         else:
             raise KeyError(f"{args.ac_func} is no valid value for --ac_func")
     else:
