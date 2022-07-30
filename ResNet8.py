@@ -3,7 +3,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.optim as optim
-from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple
+# from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple
 
 """
 "in_channels": 16,
