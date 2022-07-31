@@ -1,14 +1,70 @@
-python run_eval_r.py --ac_func 0
-python run_eval_r.py --ac_func 1
-python run_eval_r.py --ac_func 2
-python run_eval_r.py --ac_func 3
-python run_eval_r.py --ac_func 4
-python run_eval_r.py --ac_func 5
-python run_eval_r.py --ac_func 6
-python run_eval_r.py --ac_func 0 --network ResNet8
-python run_eval_r.py --ac_func 1 --network ResNet8
-python run_eval_r.py --ac_func 2 --network ResNet8
-python run_eval_r.py --ac_func 3 --network ResNet8
-python run_eval_r.py --ac_func 4 --network ResNet8
-python run_eval_r.py --ac_func 5 --network ResNet8
-python run_eval_r.py --ac_func 6 --network ResNet8
+python run_eval_r.py --ac_func 0 --seed 2
+python run_eval_r.py --ac_func 1 --seed 2
+python run_eval_r.py --ac_func 2 --seed 2
+python run_eval_r.py --ac_func 3 --seed 2
+python run_eval_r.py --ac_func 4 --seed 2
+python run_eval_r.py --ac_func 5 --seed 2
+python run_eval_r.py --ac_func 6 --seed 2
+python run_eval_r.py --ac_func 0 --network ResNet8 --seed 2
+python run_eval_r.py --ac_func 1 --network ResNet8 --seed 2
+python run_eval_r.py --ac_func 2 --network ResNet8 --seed 2
+python run_eval_r.py --ac_func 3 --network ResNet8 --seed 2
+python run_eval_r.py --ac_func 4 --network ResNet8 --seed 2
+python run_eval_r.py --ac_func 5 --network ResNet8 --seed 2
+python run_eval_r.py --ac_func 6 --network ResNet8 --seed 2
+python run_eval_r.py --ac_func 0 --seed 1
+python run_eval_r.py --ac_func 1 --seed 1
+python run_eval_r.py --ac_func 2 --seed 1
+python run_eval_r.py --ac_func 3 --seed 1
+python run_eval_r.py --ac_func 4 --seed 1
+python run_eval_r.py --ac_func 5 --seed 1
+python run_eval_r.py --ac_func 6 --seed 1
+python run_eval_r.py --ac_func 0 --network ResNet8 --seed 1
+python run_eval_r.py --ac_func 1 --network ResNet8 --seed 1
+python run_eval_r.py --ac_func 2 --network ResNet8 --seed 1
+python run_eval_r.py --ac_func 3 --network ResNet8 --seed 1
+python run_eval_r.py --ac_func 4 --network ResNet8 --seed 1
+python run_eval_r.py --ac_func 5 --network ResNet8 --seed 1
+python run_eval_r.py --ac_func 6 --network ResNet8 --seed 1
+python run_eval_r.py --ac_func 0 --seed 3
+python run_eval_r.py --ac_func 1 --seed 3
+python run_eval_r.py --ac_func 2 --seed 3
+python run_eval_r.py --ac_func 3 --seed 3
+python run_eval_r.py --ac_func 4 --seed 3
+python run_eval_r.py --ac_func 5 --seed 3
+python run_eval_r.py --ac_func 6 --seed 3
+python run_eval_r.py --ac_func 0 --network ResNet8 --seed 3
+python run_eval_r.py --ac_func 1 --network ResNet8 --seed 3
+python run_eval_r.py --ac_func 2 --network ResNet8 --seed 3
+python run_eval_r.py --ac_func 3 --network ResNet8 --seed 3
+python run_eval_r.py --ac_func 4 --network ResNet8 --seed 3
+python run_eval_r.py --ac_func 5 --network ResNet8 --seed 3
+python run_eval_r.py --ac_func 6 --network ResNet8 --seed 3
+python run_eval_r.py --ac_func 0 --seed 4
+python run_eval_r.py --ac_func 1 --seed 4
+python run_eval_r.py --ac_func 2 --seed 4
+python run_eval_r.py --ac_func 3 --seed 4
+python run_eval_r.py --ac_func 4 --seed 4
+python run_eval_r.py --ac_func 5 --seed 4
+python run_eval_r.py --ac_func 6 --seed 4
+python run_eval_r.py --ac_func 0 --network ResNet8 --seed 4
+python run_eval_r.py --ac_func 1 --network ResNet8 --seed 4
+python run_eval_r.py --ac_func 2 --network ResNet8 --seed 4
+python run_eval_r.py --ac_func 3 --network ResNet8 --seed 4
+python run_eval_r.py --ac_func 4 --network ResNet8 --seed 4
+python run_eval_r.py --ac_func 5 --network ResNet8 --seed 4
+python run_eval_r.py --ac_func 6 --network ResNet8 --seed 4
+python run_eval_r.py --ac_func 0 --seed 0
+python run_eval_r.py --ac_func 1 --seed 0
+python run_eval_r.py --ac_func 2 --seed 0
+python run_eval_r.py --ac_func 3 --seed 0
+python run_eval_r.py --ac_func 4 --seed 0
+python run_eval_r.py --ac_func 5 --seed 0
+python run_eval_r.py --ac_func 6 --seed 0
+python run_eval_r.py --ac_func 0 --network ResNet8 --seed 0
+python run_eval_r.py --ac_func 1 --network ResNet8 --seed 0
+python run_eval_r.py --ac_func 2 --network ResNet8 --seed 0
+python run_eval_r.py --ac_func 3 --network ResNet8 --seed 0
+python run_eval_r.py --ac_func 4 --network ResNet8 --seed 0
+python run_eval_r.py --ac_func 5 --network ResNet8 --seed 0
+python run_eval_r.py --ac_func 6 --network ResNet8 --seed 0
