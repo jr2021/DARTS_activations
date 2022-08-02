@@ -44,7 +44,7 @@ errors.json -> Accuracy and loss values
 model.pth -> state_dict of final trained model  
 
 ### Results:
-[Poster](Deep_learning_lab_poster.svg)
+[Poster](Deep_Learning_Lab_Poster.pdf)
 
 ### References
 [1] Ramachandran, Prajit, Barret Zoph, and Quoc V. Le. "Searching for activation functions." (2017).  
