@@ -14,7 +14,9 @@ from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div
     BetaMix, Stack
 from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
-    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc
+    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
+
+"""Naslib search space for ResNet8 with complex activation cell"""
 
 
 class ActivationFuncResNet20SearchSpace(Graph):
@@ -285,11 +287,11 @@ class ActivationFuncResNet20SearchSpace(Graph):
             edge.data.set("op", [
                 ops.Identity(),
                 ops.Zero(stride=1),
-                # Power(2),
-                # Power(3),
-                # Power(.5),
+                Power(2),
+                Power(3),
+                Sqrt(),
                 Sin(),
-                # Cos(),
+                Cos(),
                 Abs_op(),
                 Sign(),
                 Beta_mul(channels=channels),
@@ -301,7 +303,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 Tanh(),
                 Asinh(),
                 Atan(),
-                # Sinc(),
+                Sinc(),
                 Maximum0(),
                 Minimum0(),
                 Sigmoid(),

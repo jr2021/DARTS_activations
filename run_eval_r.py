@@ -19,7 +19,6 @@ from naslib.utils import utils
 from activation_sub_func.experimental_func_r import *
 from pathlib import Path
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--network', type=str, default="ResNet20")
 parser.add_argument('--ac_func', type=int, default=0)
@@ -34,6 +33,9 @@ parser.add_argument('--save_path', type=str, default="eval")
 # 4: DrNas_simple_r
 # 5: DrNas_complex_r
 # 6: Gdas_simple_r
+
+"""Evaluation of activation functions found by the restricted search space.
+Final reported results."""
 
 args = parser.parse_args()
 
@@ -102,9 +104,9 @@ if __name__ == '__main__':
 
     if args.network == "ResNet20":
         if args.ac_func == 0:
-            net = ResNet20(ac_func=DartsFunc_simple_r, requires_channels=True).to("cuda:0")
+            net = ResNet20(ac_func=DartsFunc_simple_r, requires_channels=True).to("cuda")
         elif args.ac_func == 1:
-            net = ResNet20(ac_func=DartsFunc_complex_r, requires_channels=True).to("cuda:0")
+            net = ResNet20(ac_func=DartsFunc_complex_r, requires_channels=True).to("cuda")
         elif args.ac_func == 2:
             net = ResNet20(ac_func=nn.ReLU, requires_channels=False).to("cuda:0")
         elif args.ac_func == 3:
@@ -235,10 +237,10 @@ if __name__ == '__main__':
 
     errors_dict["test_acc_1"].append(float(test_top5.avg))
     errors_dict["test_acc_5"].append(float(test_top1.avg))
-    errors_dict["test_loss"].append(float(test_loss.avg))
+    # errors_dict["test_loss"].append(float(test_loss.avg))
 
     print(
-        "Test loss:{:.5f}, Test Accuracy (top1, top5): {:.5f}, {:.5f} ".format(test_loss.avg, test_top1.avg, test_top5))
+        "Test Accuracy (top1, top5): {:.5f}, {:.5f} ".format(float(test_top1.avg), float(test_top5)))
 
     with codecs.open(os.path.join(save_path, 'errors.json'), 'w', encoding='utf-8') as file:
         json.dump(errors_dict, file, separators=(',', ':'), indent=4)

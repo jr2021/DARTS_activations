@@ -1,6 +1,8 @@
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 
+"""Unary operations with clamps"""
+
 
 class Power(AbstractPrimitive):
     def __init__(self, power):
@@ -346,4 +348,3 @@ class Beta_GDAS(AbstractPrimitive):
 
     def get_embedded_ops(self):
         return None
-

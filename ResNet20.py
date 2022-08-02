@@ -6,6 +6,7 @@ import torch.optim as optim
 # from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple
 
 """
+ResNet20 implementation in pytorch with our activation functions
 "in_channels": 16,
 "out_channels": 16,
 "kernel_size": 3,

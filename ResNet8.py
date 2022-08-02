@@ -3,9 +3,11 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.optim as optim
+
 # from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple
 
 """
+ResNet8 implementation in pytorch with our activation functions
 "in_channels": 16,
 "out_channels": 16,
 "kernel_size": 3,
@@ -115,7 +117,7 @@ if __name__ == '__main__':
     optimizer = optim.SGD(net.parameters(), lr=0.025, momentum=0.9)
 
     for epoch in range(10):  # loop over the dataset multiple times
-        print(f"epoch: {epoch+1}")
+        print(f"epoch: {epoch + 1}")
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             # get the inputs; data is a list of [inputs, labels]

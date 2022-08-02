@@ -1,6 +1,9 @@
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 
+"""Binary operations without clamp.
+Used in final Evaluation"""
+
 
 class Add(AbstractPrimitive):
     def __init__(self):
@@ -136,7 +139,7 @@ class BetaMix(AbstractPrimitive):
         return None
 
 
-class Stack():
+class Stack:
     def __init__(self):
         pass
 

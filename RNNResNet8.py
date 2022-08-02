@@ -18,8 +18,10 @@ from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, 
 import argparse
 import time
 
+"""Naslib search space for ResNet8 with simple and complex activation cells"""
 
-class ActivationFuncResNet20SearchSpace(Graph):
+
+class ActivationFuncResNet8SearchSpace(Graph):
     """
     https://www.researchgate.net/figure/ResNet-20-architecture_fig3_351046093
     """
@@ -78,7 +80,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(2)  # intermediate
         self.add_node(3,
                       subgraph=activation_cell.copy().set_scope("activation_1").set_input([2]))  # activation cell 3
-        #self.nodes[3]['subgraph'].name = "activation_1"
+        # self.nodes[3]['subgraph'].name = "activation_1"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{1}",
@@ -87,7 +89,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(4)
         self.add_node(5,
                       subgraph=activation_cell.copy().set_scope("activation_2").set_input([4]))  # activation cell 3
-        #self.nodes[5]['subgraph'].name = "activation_2"
+        # self.nodes[5]['subgraph'].name = "activation_2"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{2}",
@@ -96,7 +98,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
         self.add_node(6)
         self.add_node(7,
                       subgraph=activation_cell.copy().set_scope("activation_3").set_input([6]))  # activation cell 3
-        #self.nodes[7]['subgraph'].name = "activation_3"
+        # self.nodes[7]['subgraph'].name = "activation_3"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, 16),
             scope=f"activation_{3}",
@@ -154,7 +156,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-        #self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage}",
@@ -164,7 +166,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -192,7 +194,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 2, subgraph=cell.copy().set_scope(f"activation_{stage}").set_input(
             [start + 1]))  # activation cell 3
-       # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
+        # self.nodes[start + 2]['subgraph'].name = f"activation_{stage}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_a["out_channels"]),
             scope=f"activation_{stage}",
@@ -202,7 +204,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
         self.add_node(start + 4, subgraph=cell.copy().set_scope(f"activation_{stage + 1}").set_input(
             [start + 3]))  # activation cell 3
-       # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
+        # self.nodes[start + 4]['subgraph'].name = f"activation_{stage + 1}"
         self.update_edges(
             update_func=lambda edge: self._set_ops(edge, conv_option_b["out_channels"]),
             scope=f"activation_{stage + 1}",
@@ -303,7 +305,7 @@ if __name__ == '__main__':
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
-    search_space = ActivationFuncResNet20SearchSpace()
+    search_space = ActivationFuncResNet8SearchSpace()
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 

@@ -1,6 +1,8 @@
 import torch
 from naslib.search_spaces.core.primitives import AbstractPrimitive
 
+"""Binary operations with clamp"""
+
 
 class Add(AbstractPrimitive):
     def __init__(self):

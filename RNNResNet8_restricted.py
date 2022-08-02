@@ -2,7 +2,7 @@ import logging
 import networkx as nx
 import matplotlib.pyplot as plt
 from naslib.defaults.trainer import Trainer
-from naslib.optimizers import GDASOptimizer
+from naslib.optimizers import DARTSOptimizer
 from naslib.utils import utils, setup_logger
 from naslib.search_spaces.core.graph import Graph, EdgeData
 from naslib.search_spaces.core import primitives as ops
@@ -14,12 +14,17 @@ from activation_sub_func.binary_func_nc import Maximum, Minimum, Sub, Add, Mul, 
     BetaMix, Stack
 from activation_sub_func.unary_func_nc import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
-    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt, Beta_GDAS
+    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
 import argparse
 import time
 
+"""
+Naslib search space of ResNet8 with complex and simple activations cells and limited operation choices.
+Used in Final Evaluation    
+"""
 
-class ActivationFuncResNet20SearchSpace(Graph):
+
+class ActivationFuncResNet8SearchSpace(Graph):
     """
     https://www.researchgate.net/figure/ResNet-20-architecture_fig3_351046093
     """
@@ -261,7 +266,7 @@ class ActivationFuncResNet20SearchSpace(Graph):
                 # LogExp(),
                 # Exp2(),
                 # Erf(),
-                Beta_GDAS(channels=channels),
+                Beta(channels=channels),
             ])
         # binary (4, 5), (9, 10)
         elif (edge.head, edge.tail) in {(4, 5), (9, 10)}:
@@ -281,13 +286,13 @@ class ActivationFuncResNet20SearchSpace(Graph):
 
 if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
-    config.optimizer = 'gdas'  # 'gdas', 'drnas'
+    config.optimizer = 'darts'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
     config.search.batch_size = 64
     config.search.epochs = 100
     config.search.lr = 0.025
     config.run_id = time.time()
-    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_small_restricted'
+    config.save = f'{config.out_dir}/{config.dataset}/{config.optimizer}/{config.run_id}_restricted'
 
     config.evaluation.epochs = 100
 
@@ -303,11 +308,11 @@ if __name__ == '__main__':
     logger = setup_logger(config.save + '/log.log')
     logger.setLevel(logging.INFO)
 
-    search_space = ActivationFuncResNet20SearchSpace("small")
+    search_space = ActivationFuncResNet8SearchSpace("huge")
     # nx.draw_kamada_kawai(search_space)
     # plt.show()
 
-    optimizer = GDASOptimizer(config)
+    optimizer = DARTSOptimizer(config)
     optimizer.adapt_search_space(search_space)
     # with torch.autograd.set_detect_anomaly(True):
     trainer = Trainer(optimizer, config)

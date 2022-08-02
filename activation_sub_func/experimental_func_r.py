@@ -6,6 +6,9 @@ from torch.nn import Identity
 from activation_sub_func.unary_func_nc import Power, Log, Beta_add, Abs_op, Beta_mul, Sqrt, Sign, Maximum0, Sigmoid
 from activation_sub_func.binary_func_nc import Mul, BetaMix, Stack, Add, Minimum, SigMul
 
+"""Activations found using smaller search space.
+Used for final evaluations"""
+
 
 class DartsFunc_simple_r(nn.Module):
     __constants__ = ['inplace']

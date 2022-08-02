@@ -19,6 +19,7 @@ from naslib.utils import utils
 from activation_sub_func.experimental_func import DartsFunc_complex, DartsFunc_simple, GDAS_simple, GDAS_complex
 from pathlib import Path
 
+"""Evaluation of activations functions found on larger choice of operations"""
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--network', type=str, default="ResNet20")

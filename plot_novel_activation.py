@@ -8,6 +8,8 @@ import torch.nn as nn
 from activation_sub_func.binary_func import SigMul, BetaMix, Mul, Stack, Add
 from activation_sub_func.unary_func import Cosh, Exp, Abs_op
 
+"""Plots the searched activation functions"""
+
 lin = torch.linspace(-5, 5, 1000).reshape((1, 1, 1, 1000)).cuda()
 activation_func = DrNasFunc_complex_r(1).cuda()
 
