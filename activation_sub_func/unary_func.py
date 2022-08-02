@@ -350,3 +350,15 @@ class Beta_GDAS(AbstractPrimitive):
 
     def get_embedded_ops(self):
         return None
+
+
+class Zero(AbstractPrimitive):
+    def __init__(self):
+        super().__init__(locals())
+
+    def forward(self, x, edge_data=None):
+        # assert torch.sum(torch.isnan(result)) == 0
+        return torch.zeros_like(x)
+
+    def get_embedded_ops(self):
+        return None

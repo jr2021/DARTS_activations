@@ -14,7 +14,7 @@ from activation_sub_func.binary_func import Maximum, Minimum, Sub, Add, Mul, Div
     BetaMix, Stack
 from activation_sub_func.unary_func import Power, Sin, Cos, Abs_op, Sign, Beta, Beta_mul, Beta_add, Log, Exp, \
     Sinh, Cosh, \
-    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt
+    Tanh, Asinh, Atan, Maximum0, Minimum0, Sigmoid, LogExp, Exp2, Erf, Sinc, Sqrt, Zero
 import argparse
 import time
 
@@ -241,31 +241,31 @@ class ActivationFuncResNet20SearchSpace(Graph):
         # unary (1, 2), (1, 3), (1, 8), (6, 7)
         if (edge.head, edge.tail) in {(1, 2), (1, 3), (1, 8), (6, 7)}:
             edge.data.set("op", [
-                # ops.Sequential(ops.Identity(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(ops.Zero(stride=1), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(nn.Identity(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Zero(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Power(2), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Power(3), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Power(3), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Sqrt(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Sin(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Cos(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Abs_op(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Sign(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Beta_mul(channels=channels), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Cos(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Abs_op(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Sign(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Beta_mul(channels=channels), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Beta_add(channels=channels), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Log(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Exp(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Sinh(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Cosh(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Sinh(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Cosh(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Tanh(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Asinh(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Atan(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Atan(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Sinc(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Maximum0(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Minimum0(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Minimum0(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Sigmoid(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(LogExp(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Exp2(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Erf(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Exp2(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Erf(), nn.BatchNorm2d(channels, affine=False)),
                 # ops.Sequential(Beta(channels=channels), nn.BatchNorm2d(channels, affine=False))
             ])
         # binary (4, 5), (9, 10)
