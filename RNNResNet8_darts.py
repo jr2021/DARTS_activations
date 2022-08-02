@@ -272,13 +272,13 @@ class ActivationFuncResNet20SearchSpace(Graph):
         elif (edge.head, edge.tail) in {(4, 5), (9, 10)}:
             edge.data.set("op", [
                 ops.Sequential(Add(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Sub(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Sub(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(Mul(), nn.BatchNorm2d(channels, affine=False)),
                 # Div(),
                 ops.Sequential(Maximum(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(Minimum(), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(Minimum(), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(SigMul(), nn.BatchNorm2d(channels, affine=False)),
-                # ops.Sequential(ExpBetaSub2(channels=channels), nn.BatchNorm2d(channels, affine=False)),
+                ops.Sequential(ExpBetaSub2(channels=channels), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(ExpBetaSubAbs(channels=channels), nn.BatchNorm2d(channels, affine=False)),
                 ops.Sequential(BetaMix(channels=channels), nn.BatchNorm2d(channels, affine=False)),
             ])
@@ -288,7 +288,7 @@ if __name__ == '__main__':
     config = utils.get_config_from_args(config_type='nas')
     config.optimizer = 'darts'  # 'gdas', 'drnas'
     utils.set_seed(config.seed)
-    config.search.batch_size = 32
+    config.search.batch_size = 16
     config.search.epochs = 100
     config.search.lr = 0.025
     config.search.grad_clip = 2
