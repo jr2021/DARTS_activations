@@ -43,8 +43,13 @@ Files in /eval/eval_network_acfunc_seed/
 errors.json -> Accuracy and loss values  
 model.pth -> state_dict of final trained model  
 
+### Data:
+
+https://drive.google.com/drive/folders/1LSDhzWjrMVgFIPAvAhhmAq7XwvQ5oAXk
+
 ### Results:
-[Poster](Deep_Learning_Lab_Poster.pdf)
+[Poster](Deep_Learning_Lab_Poster.pdf)  
+[Figures used in poster](/figures/)
 
 ### References
 [1] Ramachandran, Prajit, Barret Zoph, and Quoc V. Le. "Searching for activation functions." (2017).  
